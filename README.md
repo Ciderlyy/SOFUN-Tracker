@@ -8,8 +8,6 @@
 
 A comprehensive web-based solution for military unit commanders to track and manage personnel assessments, designed specifically for Singapore Armed Forces (SAF) units managing both National Service (NSF) and Regular personnel.
 
-![SOFUN Tracker Dashboard](assets/images/dashboard-preview.png)
-
 ## 🎯 Overview
 
 SOFUN Tracker is a modern, responsive web application that streamlines the complex process of tracking military personnel assessments. It provides real-time visibility into individual and unit-wide progress across multiple assessment phases, helping commanders make informed decisions about training priorities and resource allocation.
