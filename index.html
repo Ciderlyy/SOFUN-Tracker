@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced SOFUN Tracker System v2.0</title>
+    
+    <!-- External Libraries (keep these exactly as they are) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Our CSS Files (we'll create these next) -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <style>
+    /* Make modal content scrollable if it overflows */
+    #editModal .modal-content {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>SOFUN Tracker System v2.0</h1>
+            <p>Enhanced NSF & Regular Personnel Assessment Tracking</p>
+            <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+        </div>
+
+        <div class="import-section">
+            <h3>📁 Import & Data Management</h3>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Upload SOFUN Tracker Excel File:</label>
+                    <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                    <small>Excel file must contain sheets named "IPPT", "RANGE", and "VOC"</small>
+                </div>
+                <button class="btn btn-warning" onclick="downloadImprovedExcel()">Download Excel</button>
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print Report</button>
+                <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>📋 Version 2.0 Features:</strong><br>
+                ✅ Search & Filter capabilities by name, platoon, or status<br>
+                ✅ Individual record editing with all fields<br>
+                ✅ Dark mode support for night viewing<br>
+                ✅ Simplified progress tracking: Y1 In progress → Y2 Not started → Y2 In progress → Y2 Completed<br>
+                ✅ Enhanced data tracking (test dates, platoon assignment, medical status)<br>
+                ✅ Bulk operations & complete audit trail<br>
+                ✅ Print-friendly reports for command briefings<br>
+                ✅ Automatic platoon name validation and correction
+            </div>
+        </div>
+
+        <div class="search-filter-section">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search by name, platoon, or status..." oninput="handleSearch()" onchange="handleSearch()" onkeydown="if(event.key==='Enter'){handleSearch()}" >
+            </div>
+            <div class="filter-controls">
+                <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+                    <option value="">All Categories</option>
+                    <option value="NSF">NSF Only</option>
+                    <option value="Regular">Regular Only</option>
+                </select>
+                <select class="filter-select" id="statusFilter" onchange="applyFilters()">
+                    <option value="">All Status</option>
+                    <option value="Y1 In progress">Y1 In progress</option>
+                    <option value="Y2 Not started">Y2 Not started</option>
+                    <option value="Y2 In progress">Y2 In progress</option>
+                    <option value="Y2 Completed">Y2 Completed</option>
+                </select>
+                <select class="filter-select" id="platoonFilter" onchange="applyFilters()">
+                    <option value="">All Platoons</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bulk-actions" id="bulkActions">
+            <h4>Bulk Actions</h4>
+            <button class="btn btn-primary" onclick="bulkUpdatePlatoon()">Update Platoon</button>
+            <button class="btn btn-warning" onclick="bulkUpdateStatus()">Update Status</button>
+            <button class="btn btn-danger" onclick="clearSelection()">Clear Selection</button>
+            <span id="selectedCount">0 selected</span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total NSF</h3>
+                <div class="number" id="totalNSF">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Regulars</h3>
+                <div class="number" id="totalRegulars">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Y2 IPPT Gold</h3>
+                <div class="number" id="y2IpptGold">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Y2 VOC Pass</h3>
+                <div class="number" id="y2VocPass">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Y2 Range Qualified</h3>
+                <div class="number" id="y2RangeQualified">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Data Completeness</h3>
+                <div class="number" id="dataCompleteness">0%</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <h2>📊 Executive Dashboard</h2>
+            <div class="charts-grid">
+                <div>
+                    <div class="chart-title">Y2 IPPT Performance</div>
+                    <div class="chart-container">
+                        <canvas id="ipptChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-title">Y2 VOC Results</div>
+                    <div class="chart-container">
+                        <canvas id="vocChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-title">Y2 Range/CS Performance</div>
+                    <div class="chart-container">
+                        <canvas id="rangeChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <div class="chart-title">Platoon Performance Comparison</div>
+                    <div class="chart-container">
+                        <canvas id="platoonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tables-section">
+            <h2>👥 Personnel Management</h2>
+            
+            <div class="category-tabs">
+                <button class="category-tab active" onclick="switchCategory('nsf')">NSF Personnel</button>
+                <button class="category-tab" onclick="switchCategory('regulars')">Regular Personnel</button>
+                <button class="category-tab" onclick="switchCategory('summary')">Summary Report</button>
+                <button class="category-tab" onclick="switchCategory('audit')">Audit Log</button>
+            </div>
+
+            <div id="nsf" class="category-content active">
+                <h3>NSF Personnel</h3>
+                <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                <div class="table-container">
+                    <table id="nsfTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllNsf" onchange="selectAll('nsf')"></th>
+                                <th>Name</th>
+                                <th>Platoon</th>
+                                <th>ORD Date</th>
+                                <th colspan="3" class="phase-header">Y1 Assessment</th>
+                                <th colspan="3" class="phase-header">Y2 Assessment</th>
+                                <th>Medical Status</th>
+                                <th>Progress</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>IPPT</th>
+                                <th>VOC</th>
+                                <th>ATP</th>
+                                <th>IPPT</th>
+                                <th>VOC</th>
+                                <th>Range</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="nsfBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="regulars" class="category-content">
+                <h3>Regular Personnel</h3>
+                <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                <div class="table-container">
+                    <table id="regularsTable">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAllReg" onchange="selectAll('regulars')"></th>
+                                <th>Name</th>
+                                <th>Unit</th>
+                                <th>Rank</th>
+                                <th colspan="3" class="phase-header">Y1 Assessment</th>
+                                <th colspan="3" class="phase-header">Y2 Assessment</th>
+                                <th>Medical Status</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th>IPPT</th>
+                                <th>VOC</th>
+                                <th>ATP</th>
+                                <th>IPPT</th>
+                                <th>VOC</th>
+                                <th>Range</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="regularsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="summary" class="category-content">
+                <h3>Summary Report</h3>
+                <div class="table-container">
+                    <table id="summaryTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Total Personnel</th>
+                                <th>Y1 Complete</th>
+                                <th>Y2 Complete</th>
+                                <th>Y2 IPPT Gold</th>
+                                <th>Y2 VOC Pass</th>
+                                <th>Y2 Range Qualified</th>
+                                <th>Completion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="audit" class="category-content">
+                <h3>Audit Log</h3>
+                <div class="audit-log" id="auditLog">
+                    <div class="audit-entry">System initialized</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Personnel Record</h2>
+            <form id="editForm">
+                <div class="form-group">
+                    <label>Name:</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>Platoon:</label>
+                    <select id="editPlatoon" required>
+                        <option value="Unassigned">Unassigned</option>
+                        <optgroup label="Combat Units">
+                            <option value="Platoon 1">Platoon 1</option>
+                            <option value="Platoon 2">Platoon 2</option>
+                            <option value="Platoon 3">Platoon 3</option>
+                            <option value="Platoon 4">Platoon 4</option>
+                        </optgroup>
+                        <optgroup label="Support Units">
+                            <option value="COY HQ">COY HQ</option>
+                            <option value="Support Platoon">Support Platoon</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Medical">Medical</option>
+                            <option value="Signals">Signals</option>
+                            <option value="Transport">Transport</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ORD Date (NSF only):</label>
+                    <input type="date" id="editOrdDate">
+                </div>
+                <div class="form-group">
+                    <label>Medical Status:</label>
+                    <select id="editMedicalStatus">
+                        <option value="Fit">Fit</option>
+                        <option value="Light Duty">Light Duty</option>
+                        <option value="Excused IPPT">Excused IPPT</option>
+                        <option value="Medical Board">Medical Board</option>
+                    </select>
+                </div>
+                <h3>Y1 Assessment</h3>
+                <div class="form-group">
+                    <label>IPPT:</label>
+                    <select id="editY1Ippt">
+                        <option value="">-</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY1IpptDate" placeholder="Test date">
+                </div>
+                <div class="form-group">
+                    <label>VOC:</label>
+                    <select id="editY1Voc">
+                        <option value="">-</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY1VocDate" placeholder="Test date">
+                </div>
+                <div class="form-group">
+                    <label>ATP:</label>
+                    <select id="editY1Atp">
+                        <option value="">-</option>
+                        <option value="Marksman">Marksman</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY1AtpDate" placeholder="Test date">
+                </div>
+                <h3>Y2 Assessment</h3>
+                <div class="form-group">
+                    <label>IPPT:</label>
+                    <select id="editY2Ippt">
+                        <option value="">Pending</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY2IpptDate" placeholder="Test date">
+                </div>
+                <div class="form-group">
+                    <label>VOC:</label>
+                    <select id="editY2Voc">
+                        <option value="">Pending</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY2VocDate" placeholder="Test date">
+                </div>
+                <div class="form-group">
+                    <label>Range:</label>
+                    <select id="editY2Range">
+                        <option value="">Pending</option>
+                        <option value="Marksman">Marksman</option>
+                        <option value="Sharpshooter">Sharpshooter</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editY2RangeDate" placeholder="Test date">
+                </div>
+                <div style="text-align: right; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <button type="button" class="btn btn-danger" id="deletePersonnelBtn" onclick="deletePersonnel()">Delete</button>
+                    <div>
+                        <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Our JavaScript Files - Order is important! -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/data-processor.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/personnel-manager.js"></script>
+    <script src="js/app.js"></script>
+
+
+<!-- Add this TEMPORARY script tag to the bottom of your index.html, just before </body> -->
+
+<script>
+// Quick temporary fix for dark mode - we'll organize this properly later
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const btn = document.querySelector('.dark-mode-toggle');
+    btn.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+}
+
+// Load dark mode preference on page load
+document.addEventListener('DOMContentLoaded', function() {
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.dark-mode-toggle').textContent = '☀️ Light Mode';
+    }
+});
+</script>
+</body>
+</html>
