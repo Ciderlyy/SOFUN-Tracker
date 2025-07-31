@@ -127,6 +127,26 @@
     transform: scale(1.05);
 }
 
+/* PES Badge */
+.pes-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #6c5ce7, #5f3dc4);
+    color: white;
+    border: 1px solid #5f3dc4;
+    transition: all 0.2s ease;
+}
+
+.pes-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+}
+
 /* IPPT Grades */
 .status-gold { 
     background: #ffd700; 

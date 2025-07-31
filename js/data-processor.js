@@ -41,8 +41,9 @@ class SofunDataProcessor {
             const sheet = workbook.Sheets[allInOneSheetName];
             const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-            // --- Extract ORD dates from VOC sheet (column G) ---
+            // --- Extract ORD dates and Y1 window dates from VOC sheet ---
             let ordDateMap = new Map();
+            let y1WindowMap = new Map();
             const vocSheetName = availableSheets.find(
                 name => name.trim().toLowerCase() === 'voc'
             );
@@ -65,11 +66,20 @@ class SofunDataProcessor {
                 for (let i = vocDataStartRow; i < vocData.length; i++) {
                     const row = vocData[i];
                     const name = row[2]?.toString().trim();
-                    const ordRaw = row[6]; // Column G (index 6)
-                    if (name && ordRaw) {
-                        ordDateMap.set(name.toUpperCase(), this.parseDate(ordRaw));
+                    const y1WindowRaw = row[5]; // Column F (index 5) - Y1 Window End Date
+                    const ordRaw = row[6]; // Column G (index 6) - ORD Date
+                    
+                    if (name) {
+                        const nameKey = name.toUpperCase();
+                        if (y1WindowRaw) {
+                            y1WindowMap.set(nameKey, this.parseDate(y1WindowRaw));
+                        }
+                        if (ordRaw) {
+                            ordDateMap.set(nameKey, this.parseDate(ordRaw));
+                        }
                     }
                 }
+                console.log(`VOC sheet: Extracted ${y1WindowMap.size} Y1 window dates and ${ordDateMap.size} ORD dates`);
             }
 
             // Process the single sheet using new logic
@@ -148,29 +158,39 @@ class SofunDataProcessor {
                 const y2Ippt = row[8]?.toString().trim();
                 const y2Voc = row[9]?.toString().trim();
                 const y2Range = row[10]?.toString().trim();
-                const regIppt = row[11]?.toString().trim();
-                const regVoc = row[12]?.toString().trim();
-                const regAtp = row[13]?.toString().trim();
-                const regRange = row[14]?.toString().trim();
+                const workYearIppt = row[11]?.toString().trim();
+                const workYearVoc = row[12]?.toString().trim();
+                const workYearAtp = row[13]?.toString().trim();
+                const workYearCs = row[14]?.toString().trim();
                 // Build/merge personnel record
                 const key = name.toUpperCase();
                 const personnelCategory = (service && service.toUpperCase() === 'NSF') ? 'NSF' : 'Regular';
                 if (!personnelMap.has(key)) {
-                    personnelMap.set(key, {
+                    const baseRecord = {
                         name: name.toUpperCase(),
                         category: personnelCategory,
                         platoon: currentPlatoon || 'Unassigned',
                         unit: currentPlatoon || 'Unassigned',
                         rank: rank,
                         pes: pes,
-                        y1: { ippt: '', ipptDate: null, voc: '', vocDate: null, atp: '', atpDate: null },
-                        y2: { ippt: '', ipptDate: null, voc: '', vocDate: null, range: '', rangeDate: null },
                         lastUpdated: new Date(),
                         ordDate: null,
                         isORD: false,
                         medicalStatus: 'Fit',
                         remedialTraining: []
-                    });
+                    };
+                    
+                    if (personnelCategory === 'Regular') {
+                        // Regular personnel use Work Year assessments
+                        baseRecord.workYear = { ippt: '', ipptDate: null, voc: '', vocDate: null, atp: '', atpDate: null, cs: '', csDate: null };
+                    } else {
+                        // NSF personnel use Y1/Y2 assessments  
+                        baseRecord.y1 = { ippt: '', ipptDate: null, voc: '', vocDate: null, atp: '', atpDate: null };
+                        baseRecord.y2 = { ippt: '', ipptDate: null, voc: '', vocDate: null, range: '', rangeDate: null };
+                        baseRecord.y1WindowEndDate = null; // Y1 assessment window end date
+                    }
+                    
+                    personnelMap.set(key, baseRecord);
                     personnelCount++;
                 }
                 const person = personnelMap.get(key);
@@ -179,31 +199,51 @@ class SofunDataProcessor {
                 if (rank && person.rank !== rank) person.rank = rank;
                 if (pes && person.pes !== pes) person.pes = pes;
                 if (service && person.category !== personnelCategory) person.category = personnelCategory;
-                // --- Assign ORD date from VOC sheet if NSF ---
-                if (person.category === 'NSF' && ordDateMap.has(key)) {
-                    person.ordDate = ordDateMap.get(key);
+                // --- Assign ORD date and Y1 window date from VOC sheet if NSF ---
+                if (person.category === 'NSF') {
+                    if (ordDateMap.has(key)) {
+                        person.ordDate = ordDateMap.get(key);
+                    }
+                    if (y1WindowMap.has(key)) {
+                        person.y1WindowEndDate = y1WindowMap.get(key);
+                    }
                 }
-                // Assign results (do not overwrite valid values with 'MISSING' or 'NA')
-                if (y1Ippt && y1Ippt.toUpperCase() !== 'MISSING' && y1Ippt.toUpperCase() !== 'NA') {
-                    person.y1.ippt = y1Ippt;
+                // Assign results based on personnel category
+                if (person.category === 'Regular') {
+                    // Regular personnel use Work Year assessments (columns L-O)
+                    if (workYearIppt && workYearIppt.toUpperCase() !== 'MISSING' && workYearIppt.toUpperCase() !== 'NA') {
+                        person.workYear.ippt = workYearIppt;
+                    }
+                    if (workYearVoc && workYearVoc.toUpperCase() !== 'MISSING' && workYearVoc.toUpperCase() !== 'NA') {
+                        person.workYear.voc = workYearVoc;
+                    }
+                    if (workYearAtp && workYearAtp.toUpperCase() !== 'MISSING' && workYearAtp.toUpperCase() !== 'NA') {
+                        person.workYear.atp = workYearAtp;
+                    }
+                    if (workYearCs && workYearCs.toUpperCase() !== 'MISSING' && workYearCs.toUpperCase() !== 'NA') {
+                        person.workYear.cs = workYearCs;
+                    }
+                } else {
+                    // NSF personnel use Y1/Y2 assessments (columns F-K)
+                    if (y1Ippt && y1Ippt.toUpperCase() !== 'MISSING' && y1Ippt.toUpperCase() !== 'NA') {
+                        person.y1.ippt = y1Ippt;
+                    }
+                    if (y1Voc && y1Voc.toUpperCase() !== 'MISSING' && y1Voc.toUpperCase() !== 'NA') {
+                        person.y1.voc = y1Voc;
+                    }
+                    if (y1Atp && y1Atp.toUpperCase() !== 'MISSING' && y1Atp.toUpperCase() !== 'NA') {
+                        person.y1.atp = y1Atp;
+                    }
+                    if (y2Ippt && y2Ippt.toUpperCase() !== 'MISSING' && y2Ippt.toUpperCase() !== 'NA') {
+                        person.y2.ippt = y2Ippt;
+                    }
+                    if (y2Voc && y2Voc.toUpperCase() !== 'MISSING' && y2Voc.toUpperCase() !== 'NA') {
+                        person.y2.voc = y2Voc;
+                    }
+                    if (y2Range && y2Range.toUpperCase() !== 'MISSING' && y2Range.toUpperCase() !== 'NA') {
+                        person.y2.range = y2Range;
+                    }
                 }
-                if (y1Voc && y1Voc.toUpperCase() !== 'MISSING' && y1Voc.toUpperCase() !== 'NA') {
-                    person.y1.voc = y1Voc;
-                }
-                if (y1Atp && y1Atp.toUpperCase() !== 'MISSING' && y1Atp.toUpperCase() !== 'NA') {
-                    person.y1.atp = y1Atp;
-                }
-                if (y2Ippt && y2Ippt.toUpperCase() !== 'MISSING' && y2Ippt.toUpperCase() !== 'NA') {
-                    person.y2.ippt = y2Ippt;
-                }
-                if (y2Voc && y2Voc.toUpperCase() !== 'MISSING' && y2Voc.toUpperCase() !== 'NA') {
-                    person.y2.voc = y2Voc;
-                }
-                if (y2Range && y2Range.toUpperCase() !== 'MISSING' && y2Range.toUpperCase() !== 'NA') {
-                    person.y2.range = y2Range;
-                }
-                // Optionally, handle REG columns if needed
-                // (e.g., for regulars, you may want to store regIppt, regVoc, regAtp, regRange)
                 processed++;
             }
             const personnel = Array.from(personnelMap.values());
@@ -1230,23 +1270,24 @@ class SofunDataProcessor {
         };
         
         Object.entries(categories).forEach(([sheetName, data]) => {
-            const headers = [
-                'Name', 'Platoon', 'ORD Date', 'Medical Status',
-                'Y1 IPPT', 'Y1 IPPT Date', 'Y1 VOC', 'Y1 VOC Date', 'Y1 ATP', 'Y1 ATP Date',
-                'Y2 IPPT', 'Y2 IPPT Date', 'Y2 VOC', 'Y2 VOC Date', 'Y2 Range', 'Y2 Range Date',
-                'Y1 Complete', 'Y2 Complete', 'Overall Status'
-            ];
+                            const headers = [
+                    'Name', 'Platoon', 'PES Status', 'ORD Date', 'Medical Status',
+                    'Y1 IPPT', 'Y1 IPPT Date', 'Y1 VOC', 'Y1 VOC Date', 'Y1 ATP', 'Y1 ATP Date',
+                    'Y2 IPPT', 'Y2 IPPT Date', 'Y2 VOC', 'Y2 VOC Date', 'Y2 Range', 'Y2 Range Date',
+                    'Y1 Complete', 'Y2 Complete', 'Overall Status'
+                ];
             
             const rows = data.map(person => {
                 const y1Complete = person.y1.ippt && person.y1.voc && person.y1.atp ? 'Yes' : 'No';
                 const y2Complete = person.y2.ippt && person.y2.voc && person.y2.range ? 'Yes' : 'No';
                 const status = getPersonStatus(person);
                 
-                return [
-                    person.name,
-                    person.platoon || '',
-                    person.ordDate || '',
-                    person.medicalStatus || 'Fit',
+                                    return [
+                        person.name,
+                        person.platoon || '',
+                        person.pes || '',
+                        person.ordDate || '',
+                        person.medicalStatus || 'Fit',
                     person.y1.ippt || '',
                     person.y1.ipptDate || '',
                     person.y1.voc || '',

@@ -68,9 +68,13 @@
                 <select class="filter-select" id="statusFilter" onchange="applyFilters()">
                     <option value="">All Status</option>
                     <option value="Y1 In progress">Y1 In progress</option>
+                    <option value="Y1 Completed">Y1 Completed</option>
                     <option value="Y2 Not started">Y2 Not started</option>
                     <option value="Y2 In progress">Y2 In progress</option>
                     <option value="Y2 Completed">Y2 Completed</option>
+                    <option value="Work Year Not started">Work Year Not started</option>
+                    <option value="Work Year In progress">Work Year In progress</option>
+                    <option value="Work Year Completed">Work Year Completed</option>
                 </select>
                 <select class="filter-select" id="platoonFilter" onchange="applyFilters()">
                     <option value="">All Platoons</option>
@@ -164,6 +168,7 @@
                                 <th>Name</th>
                                 <th>Platoon</th>
                                 <th>ORD Date</th>
+                                <th>PES Status</th>
                                 <th colspan="3" class="phase-header">Y1 Assessment</th>
                                 <th colspan="3" class="phase-header">Y2 Assessment</th>
                                 <th>Medical Status</th>
@@ -171,6 +176,7 @@
                                 <th>Actions</th>
                             </tr>
                             <tr>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -202,8 +208,8 @@
                                 <th>Name</th>
                                 <th>Unit</th>
                                 <th>Rank</th>
-                                <th colspan="3" class="phase-header">Y1 Assessment</th>
-                                <th colspan="3" class="phase-header">Y2 Assessment</th>
+                                <th>PES Status</th>
+                                <th colspan="4" class="phase-header">Work Year Assessment</th>
                                 <th>Medical Status</th>
                                 <th>Status</th>
                                 <th>Actions</th>
@@ -213,12 +219,11 @@
                                 <th></th>
                                 <th></th>
                                 <th></th>
+                                <th></th>
                                 <th>IPPT</th>
                                 <th>VOC</th>
                                 <th>ATP</th>
-                                <th>IPPT</th>
-                                <th>VOC</th>
-                                <th>Range</th>
+                                <th>CS</th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -268,6 +273,22 @@
                 <div class="form-group">
                     <label>Name:</label>
                     <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>PES Status:</label>
+                    <select id="editPes">
+                        <option value="">-</option>
+                        <option value="A">A</option>
+                        <option value="B1">B1</option>
+                        <option value="B2">B2</option>
+                        <option value="B3">B3</option>
+                        <option value="B4">B4</option>
+                        <option value="C1">C1</option>
+                        <option value="C2">C2</option>
+                        <option value="C9">C9</option>
+                        <option value="E1">E1</option>
+                        <option value="E9">E9</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>Platoon:</label>
@@ -365,6 +386,50 @@
                     </select>
                     <input type="date" id="editY2RangeDate" placeholder="Test date">
                 </div>
+                
+                <h3 id="workYearHeader" style="display: none;">Work Year Assessment</h3>
+                <div id="workYearIpptGroup" class="form-group" style="display: none;">
+                    <label>IPPT:</label>
+                    <select id="editWorkYearIppt">
+                        <option value="">Pending</option>
+                        <option value="Gold">Gold</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editWorkYearIpptDate" placeholder="Test date">
+                </div>
+                <div id="workYearVocGroup" class="form-group" style="display: none;">
+                    <label>VOC:</label>
+                    <select id="editWorkYearVoc">
+                        <option value="">Pending</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editWorkYearVocDate" placeholder="Test date">
+                </div>
+                <div id="workYearAtpGroup" class="form-group" style="display: none;">
+                    <label>ATP:</label>
+                    <select id="editWorkYearAtp">
+                        <option value="">Pending</option>
+                        <option value="Marksman">Marksman</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editWorkYearAtpDate" placeholder="Test date">
+                </div>
+                <div id="workYearCsGroup" class="form-group" style="display: none;">
+                    <label>CS (Combat Shooting):</label>
+                    <select id="editWorkYearCs">
+                        <option value="">Pending</option>
+                        <option value="Marksman">Marksman</option>
+                        <option value="Sharpshooter">Sharpshooter</option>
+                        <option value="Pass">Pass</option>
+                        <option value="Fail">Fail</option>
+                    </select>
+                    <input type="date" id="editWorkYearCsDate" placeholder="Test date">
+                </div>
+                
                 <div style="text-align: right; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
                     <button type="button" class="btn btn-danger" id="deletePersonnelBtn" onclick="deletePersonnel()">Delete</button>
                     <div>

@@ -135,22 +135,49 @@ function getPersonStatus(person) {
         return { text: 'Unknown', class: 'status-pending' };
     }
 
-    const y1Complete = person.y1?.ippt && person.y1?.voc && person.y1?.atp;
-    const y2Tests = [person.y2?.ippt, person.y2?.voc, person.y2?.range];
-    const y2Completed = y2Tests.filter(test => test && test !== 'Pending').length;
     const isRegular = person.category === 'Regular';
     
-    if (y2Completed === 3) {
-        return { text: 'Y2 Completed', class: 'status-pass' };
-    } else if (y2Completed > 0) {
-        return { text: 'Y2 In progress', class: 'status-pending' };
-    } else if (isRegular) {
-        // Regular personnel skip Y1 and go directly to Y2
-        return { text: 'Y2 Not started', class: 'status-silver' };
-    } else if (y1Complete || (person.y1?.ippt || person.y1?.voc || person.y1?.atp)) {
-        return { text: 'Y2 Not started', class: 'status-silver' };
+    if (isRegular) {
+        // Regular personnel use Work Year assessments
+        const workYearTests = [person.workYear?.ippt, person.workYear?.voc, person.workYear?.atp, person.workYear?.cs];
+        const workYearCompleted = workYearTests.filter(test => test && test !== 'Pending').length;
+        
+        if (workYearCompleted === 4) {
+            return { text: 'Work Year Completed', class: 'status-pass' };
+        } else if (workYearCompleted > 0) {
+            return { text: 'Work Year In progress', class: 'status-pending' };
+        } else {
+            return { text: 'Work Year Not started', class: 'status-silver' };
+        }
     } else {
-        return { text: 'Y1 In progress', class: 'status-exempt' };
+        // NSF personnel use Y1/Y2 assessments with Y1 window logic
+        const currentDate = new Date();
+        const y1WindowEndDate = person.y1WindowEndDate;
+        const y1Complete = person.y1?.ippt && person.y1?.voc && person.y1?.atp;
+        const y1HasAnyTests = person.y1?.ippt || person.y1?.voc || person.y1?.atp;
+        const y2Tests = [person.y2?.ippt, person.y2?.voc, person.y2?.range];
+        const y2Completed = y2Tests.filter(test => test && test !== 'Pending').length;
+        
+        // Check if Y1 window has expired
+        const y1WindowExpired = y1WindowEndDate && currentDate > y1WindowEndDate;
+        
+        if (y2Completed === 3) {
+            return { text: 'Y2 Completed', class: 'status-pass' };
+        } else if (y2Completed > 0) {
+            return { text: 'Y2 In progress', class: 'status-pending' };
+        } else if (y1WindowExpired) {
+            // Y1 window has expired, move to Y2 phase
+            return { text: 'Y2 Not started', class: 'status-silver' };
+        } else if (y1Complete) {
+            // Y1 window still open and Y1 completed
+            return { text: 'Y1 Completed', class: 'status-pass' };
+        } else if (y1HasAnyTests) {
+            // Y1 window still open and Y1 in progress
+            return { text: 'Y1 In progress', class: 'status-exempt' };
+        } else {
+            // Y1 window still open and no tests started
+            return { text: 'Y1 In progress', class: 'status-exempt' };
+        }
     }
 }
 

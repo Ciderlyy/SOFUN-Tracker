@@ -92,22 +92,33 @@ class PersonnelManager {
             const statusFilter = document.getElementById('statusFilter')?.value || '';
             const platoonFilter = document.getElementById('platoonFilter')?.value || '';
             
+            console.log('Filter values:', { searchTerm, categoryFilter, statusFilter, platoonFilter });
+            console.log('Personnel data length:', personnelData.length);
+            
             const filteredData = personnelData.filter(p => {
                 // Search filter
                 const matchesSearch = !searchTerm || matchesSearchTerm(p, searchTerm);
                 
-                // Category filter
-                const matchesCategory = !categoryFilter || p.category === categoryFilter;
+                // Category filter (empty string means "All Categories")
+                const matchesCategory = !categoryFilter || categoryFilter === '' || p.category === categoryFilter;
                 
-                // Status filter
+                // Status filter (empty string means "All Status")
                 let matchesStatus = true;
-                if (statusFilter) {
+                if (statusFilter && statusFilter !== '') {
                     const personStatus = getPersonStatus(p);
                     matchesStatus = personStatus.text === statusFilter;
                 }
                 
-                // Platoon filter
-                const matchesPlatoon = !platoonFilter || p.platoon === platoonFilter;
+                // Platoon filter (empty string means "All Platoons")
+                let matchesPlatoon = true;
+                if (platoonFilter && platoonFilter !== '') {
+                    // Only filter if a specific platoon is selected
+                    const personPlatoon = p.platoon || 'Unassigned';
+                    matchesPlatoon = personPlatoon === platoonFilter;
+                } else {
+                    // "All Platoons" selected - show everyone
+                    matchesPlatoon = true;
+                }
                 
                 // Exclude ORD personnel
                 const isActive = !p.isORD;
@@ -115,6 +126,17 @@ class PersonnelManager {
                 return matchesSearch && matchesCategory && matchesStatus && matchesPlatoon && isActive;
             });
             
+            console.log(`✅ Filtered ${filteredData.length} out of ${personnelData.length} personnel`);
+            
+            // Log some examples of filtered personnel for debugging
+            if (filteredData.length > 0 && filteredData.length < 5) {
+                console.log('Filtered personnel examples:', filteredData.map(p => ({
+                    name: p.name,
+                    category: p.category,
+                    platoon: p.platoon || '(null/undefined)',
+                    status: getPersonStatus(p).text
+                })));
+            }
             return filteredData;
         } catch (error) {
             logError('Filter application failed', error);
@@ -131,10 +153,15 @@ class PersonnelManager {
             const platoonSelect = document.getElementById('platoonFilter');
             if (!platoonSelect) return;
 
-            const platoons = [...new Set(personnelData
-                .map(p => p.platoon)
-                .filter(platoon => platoon && platoon !== 'Unassigned')
+            const allPlatoons = [...new Set(personnelData
+                .map(p => p.platoon || 'Unassigned')
+                .filter(platoon => platoon)
             )].sort();
+            
+            // Put "Unassigned" at the end if it exists
+            const platoons = allPlatoons.filter(p => p !== 'Unassigned').concat(
+                allPlatoons.includes('Unassigned') ? ['Unassigned'] : []
+            );
             
             platoonSelect.innerHTML = '<option value="">All Platoons</option>';
             platoons.forEach(platoon => {
@@ -142,6 +169,13 @@ class PersonnelManager {
                 option.value = platoon;
                 option.textContent = platoon;
                 platoonSelect.appendChild(option);
+            });
+            
+            console.log('Platoon filter updated with:', platoons);
+            
+            // Add debug event listener
+            platoonSelect.addEventListener('change', (e) => {
+                console.log('Platoon filter changed to:', `"${e.target.value}"`);
             });
         } catch (error) {
             logError('Platoon filter update failed', error);
@@ -211,6 +245,7 @@ class PersonnelManager {
                     <td>${escapeHtml(person.name)}</td>
                     <td>${escapeHtml(person.platoon || '-')}</td>
                     <td>${formatDate(person.ordDate)}</td>
+                    <td><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
                     <td><span class="status-badge status-${getStatusClass(person.y1?.ippt)}">${displayGrade(person.y1?.ippt, '-')}</span></td>
                     <td><span class="status-badge status-${getStatusClass(person.y1?.voc)}">${displayGrade(person.y1?.voc, '-')}</span></td>
                     <td><span class="status-badge status-${getStatusClass(person.y1?.atp)}">${displayGrade(person.y1?.atp, '-')}</span></td>
@@ -229,12 +264,11 @@ class PersonnelManager {
                     <td>${escapeHtml(person.name)}</td>
                     <td>${escapeHtml(person.unit || person.platoon || '-')}</td>
                     <td>${escapeHtml(person.rank || '-')}</td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.ippt)}">${displayGrade(person.y1?.ippt, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.voc)}">${displayGrade(person.y1?.voc, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.atp)}">${displayGrade(person.y1?.atp, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.ippt)}">${displayGrade(person.y2?.ippt, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.voc)}">${displayGrade(person.y2?.voc, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.range)}">${displayGrade(person.y2?.range, 'Pending')}</span></td>
+                    <td><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
+                    <td><span class="status-badge status-${getStatusClass(person.workYear?.ippt)}">${displayGrade(person.workYear?.ippt, 'Pending')}</span></td>
+                    <td><span class="status-badge status-${getStatusClass(person.workYear?.voc)}">${displayGrade(person.workYear?.voc, 'Pending')}</span></td>
+                    <td><span class="status-badge status-${getStatusClass(person.workYear?.atp)}">${displayGrade(person.workYear?.atp, 'Pending')}</span></td>
+                    <td><span class="status-badge status-${getStatusClass(person.workYear?.cs)}">${displayGrade(person.workYear?.cs, 'Pending')}</span></td>
                     <td>${escapeHtml(person.medicalStatus || 'Fit')}</td>
                     <td><span class="status-badge ${status.class}">${status.text}</span></td>
                     <td><button class="btn btn-edit" onclick="personnelManager.openEditModal(${globalIndex})">Edit</button></td>
@@ -379,29 +413,70 @@ class PersonnelManager {
         try {
             // Basic information
             this.setFormValue('editName', person.name);
+            this.setFormValue('editPes', person.pes || '');
             this.setFormValue('editPlatoon', person.platoon || '');
             this.setFormValue('editOrdDate', person.ordDate || '');
             this.setFormValue('editMedicalStatus', person.medicalStatus || 'Fit');
             
-            // Y1 Assessment data
-            this.setFormValue('editY1Ippt', person.y1?.ippt || '');
-            this.setFormValue('editY1IpptDate', person.y1?.ipptDate || '');
-            this.setFormValue('editY1Voc', person.y1?.voc || '');
-            this.setFormValue('editY1VocDate', person.y1?.vocDate || '');
-            this.setFormValue('editY1Atp', person.y1?.atp || '');
-            this.setFormValue('editY1AtpDate', person.y1?.atpDate || '');
-            
-            // Y2 Assessment data
-            this.setFormValue('editY2Ippt', person.y2?.ippt || '');
-            this.setFormValue('editY2IpptDate', person.y2?.ipptDate || '');
-            this.setFormValue('editY2Voc', person.y2?.voc || '');
-            this.setFormValue('editY2VocDate', person.y2?.vocDate || '');
-            this.setFormValue('editY2Range', person.y2?.range || '');
-            this.setFormValue('editY2RangeDate', person.y2?.rangeDate || '');
+            if (person.category === 'Regular') {
+                // Show Work Year sections, hide Y1/Y2 sections
+                this.toggleAssessmentSections(true);
+                
+                // Work Year Assessment data for Regular personnel
+                this.setFormValue('editWorkYearIppt', person.workYear?.ippt || '');
+                this.setFormValue('editWorkYearIpptDate', person.workYear?.ipptDate || '');
+                this.setFormValue('editWorkYearVoc', person.workYear?.voc || '');
+                this.setFormValue('editWorkYearVocDate', person.workYear?.vocDate || '');
+                this.setFormValue('editWorkYearAtp', person.workYear?.atp || '');
+                this.setFormValue('editWorkYearAtpDate', person.workYear?.atpDate || '');
+                this.setFormValue('editWorkYearCs', person.workYear?.cs || '');
+                this.setFormValue('editWorkYearCsDate', person.workYear?.csDate || '');
+            } else {
+                // Show Y1/Y2 sections, hide Work Year sections
+                this.toggleAssessmentSections(false);
+                
+                // Y1 Assessment data for NSF personnel
+                this.setFormValue('editY1Ippt', person.y1?.ippt || '');
+                this.setFormValue('editY1IpptDate', person.y1?.ipptDate || '');
+                this.setFormValue('editY1Voc', person.y1?.voc || '');
+                this.setFormValue('editY1VocDate', person.y1?.vocDate || '');
+                this.setFormValue('editY1Atp', person.y1?.atp || '');
+                this.setFormValue('editY1AtpDate', person.y1?.atpDate || '');
+                
+                // Y2 Assessment data for NSF personnel
+                this.setFormValue('editY2Ippt', person.y2?.ippt || '');
+                this.setFormValue('editY2IpptDate', person.y2?.ipptDate || '');
+                this.setFormValue('editY2Voc', person.y2?.voc || '');
+                this.setFormValue('editY2VocDate', person.y2?.vocDate || '');
+                this.setFormValue('editY2Range', person.y2?.range || '');
+                this.setFormValue('editY2RangeDate', person.y2?.rangeDate || '');
+            }
             
         } catch (error) {
             logError('Form population failed', error);
         }
+    }
+
+    /**
+     * Toggle assessment sections based on personnel category
+     * @param {boolean} isRegular - True for Regular personnel, false for NSF
+     */
+    toggleAssessmentSections(isRegular) {
+        // Work Year sections (for Regular personnel)
+        const workYearElements = [
+            'workYearHeader', 'workYearIpptGroup', 'workYearVocGroup', 
+            'workYearAtpGroup', 'workYearCsGroup'
+        ];
+        
+        workYearElements.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = isRegular ? 'block' : 'none';
+            }
+        });
+        
+        // Y1/Y2 sections (for NSF personnel) - these are always shown for NSF
+        // We don't need to hide them since they're the default
     }
 
     /**
@@ -462,9 +537,12 @@ class PersonnelManager {
             storage.addAuditEntry(`Updated record for ${person.name}`);
             this.closeEditModal();
             
-            // Refresh the display
-            if (window.app.updateAll) {
+            // Refresh the display immediately
+            if (window.app && window.app.updateAll) {
                 window.app.updateAll();
+            } else if (window.app && window.app.applyFilters) {
+                // Fallback to apply filters which should update everything
+                window.app.applyFilters();
             }
             
             showSuccessMessage('Personnel record updated successfully');
@@ -482,25 +560,42 @@ class PersonnelManager {
     extractFormData() {
         return {
             name: document.getElementById('editName')?.value?.trim() || '',
+            pes: document.getElementById('editPes')?.value || '',
             platoon: document.getElementById('editPlatoon')?.value || '',
             ordDate: document.getElementById('editOrdDate')?.value || '',
             medicalStatus: document.getElementById('editMedicalStatus')?.value || 'Fit',
-            y1: {
-                ippt: document.getElementById('editY1Ippt')?.value || '',
-                ipptDate: document.getElementById('editY1IpptDate')?.value || '',
-                voc: document.getElementById('editY1Voc')?.value || '',
-                vocDate: document.getElementById('editY1VocDate')?.value || '',
-                atp: document.getElementById('editY1Atp')?.value || '',
-                atpDate: document.getElementById('editY1AtpDate')?.value || ''
-            },
-            y2: {
-                ippt: document.getElementById('editY2Ippt')?.value || '',
-                ipptDate: document.getElementById('editY2IpptDate')?.value || '',
-                voc: document.getElementById('editY2Voc')?.value || '',
-                vocDate: document.getElementById('editY2VocDate')?.value || '',
-                range: document.getElementById('editY2Range')?.value || '',
-                rangeDate: document.getElementById('editY2RangeDate')?.value || ''
-            }
+            // Assessment data structure depends on personnel category
+            ...(document.getElementById('editY1Ippt') ? {
+                // NSF personnel - Y1/Y2 assessments
+                y1: {
+                    ippt: document.getElementById('editY1Ippt')?.value || '',
+                    ipptDate: document.getElementById('editY1IpptDate')?.value || '',
+                    voc: document.getElementById('editY1Voc')?.value || '',
+                    vocDate: document.getElementById('editY1VocDate')?.value || '',
+                    atp: document.getElementById('editY1Atp')?.value || '',
+                    atpDate: document.getElementById('editY1AtpDate')?.value || ''
+                },
+                y2: {
+                    ippt: document.getElementById('editY2Ippt')?.value || '',
+                    ipptDate: document.getElementById('editY2IpptDate')?.value || '',
+                    voc: document.getElementById('editY2Voc')?.value || '',
+                    vocDate: document.getElementById('editY2VocDate')?.value || '',
+                    range: document.getElementById('editY2Range')?.value || '',
+                    rangeDate: document.getElementById('editY2RangeDate')?.value || ''
+                }
+            } : {
+                // Regular personnel - Work Year assessments
+                workYear: {
+                    ippt: document.getElementById('editWorkYearIppt')?.value || '',
+                    ipptDate: document.getElementById('editWorkYearIpptDate')?.value || '',
+                    voc: document.getElementById('editWorkYearVoc')?.value || '',
+                    vocDate: document.getElementById('editWorkYearVocDate')?.value || '',
+                    atp: document.getElementById('editWorkYearAtp')?.value || '',
+                    atpDate: document.getElementById('editWorkYearAtpDate')?.value || '',
+                    cs: document.getElementById('editWorkYearCs')?.value || '',
+                    csDate: document.getElementById('editWorkYearCsDate')?.value || ''
+                }
+            })
         };
     }
 

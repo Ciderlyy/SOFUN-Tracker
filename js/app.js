@@ -564,7 +564,95 @@ function toggleDarkMode() {
  * Apply filters (global function)
  */
 function applyFilters() {
-    window.app.applyFilters();
+    if (window.app && window.app.applyFilters) {
+        window.app.applyFilters();
+    } else {
+        console.warn('App not ready for filtering');
+        // Retry after a short delay if app isn't ready
+        setTimeout(() => {
+            if (window.app && window.app.applyFilters) {
+                window.app.applyFilters();
+            }
+        }, 100);
+    }
+}
+
+/**
+ * Test filter functionality (debugging helper)
+ */
+function testFilters() {
+    console.log('=== FILTER TEST ===');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    const platoonFilter = document.getElementById('platoonFilter');
+    
+    console.log('Filter elements found:', {
+        category: !!categoryFilter,
+        status: !!statusFilter,
+        platoon: !!platoonFilter
+    });
+    
+    console.log('Current filter values:', {
+        category: categoryFilter?.value,
+        status: statusFilter?.value,
+        platoon: platoonFilter?.value
+    });
+    
+    if (window.app) {
+        console.log('App state:', {
+            initialized: window.app.initialized,
+            personnelCount: window.app.personnelData?.length || 0,
+            filteredCount: window.app.filteredData?.length || 0
+        });
+        
+        // Show platoon data for debugging
+        if (window.app.personnelData) {
+            const platoonData = window.app.personnelData.map(p => ({
+                name: p.name,
+                platoon: p.platoon || '(undefined/null)',
+                category: p.category
+            }));
+            console.log('Personnel platoon data:', platoonData);
+        }
+        
+        // Test applying filters
+        console.log('Testing filter application...');
+        window.app.applyFilters();
+        console.log('Filter test complete');
+    } else {
+        console.error('window.app not available');
+    }
+}
+
+/**
+ * Test platoon filter specifically
+ */
+function testPlatoonFilter() {
+    console.log('=== PLATOON FILTER TEST ===');
+    const platoonFilter = document.getElementById('platoonFilter');
+    
+    if (!platoonFilter) {
+        console.error('Platoon filter element not found');
+        return;
+    }
+    
+    console.log('Platoon filter value:', `"${platoonFilter.value}"`);
+    console.log('Available platoon options:');
+    
+    for (let i = 0; i < platoonFilter.options.length; i++) {
+        const option = platoonFilter.options[i];
+        console.log(`  ${i}: value="${option.value}", text="${option.text}"`);
+    }
+    
+    if (window.app?.personnelData) {
+        console.log('Personnel by platoon:');
+        const platoonCounts = {};
+        window.app.personnelData.forEach(p => {
+            const platoon = p.platoon || 'undefined/null';
+            platoonCounts[platoon] = (platoonCounts[platoon] || 0) + 1;
+        });
+        console.table(platoonCounts);
+    }
 }
 
 /**
