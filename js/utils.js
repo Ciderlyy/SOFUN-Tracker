@@ -34,15 +34,7 @@ const APP_CONFIG = {
     version: '2.0'
 };
 
-// Sample Names for Data Generation
-const SAMPLE_NAMES = [
-    'TAY JIA QING', 'TAN KAI EN TERENCE', 'QUEK ZHEN BENG', 'TAN JUN YUAN RYAN',
-    'JOSHUA JOSEPH JOHN', 'LOH JIA WEI', 'BENOIT JEROME CHIA', 'CHUA SIEW TING VIVIAN',
-    'AMANDA THEA TAN HUI XUAN', 'LEE JING SHENG', 'LEROY NEO EU XIANG', 'ERVIN LEE JIA LIANG',
-    'WONG WEI MING', 'LIM SHENG HONG', 'CHEN YONG HAO', 'DAVID TAN WEI JIAN'
-];
-
-const RANKS = ['CPL', 'SGT', 'SSG', '1SG', '2LT', 'LTA', 'CPT'];
+// Sample data removed for security reasons
 
 /* ---------- Date & Time Utilities ---------- */
 
@@ -291,39 +283,7 @@ function validateDateInput(dateString, allowFuture = false) {
 
 /* ---------- Data Processing Utilities ---------- */
 
-/**
- * Generate random ORD date for NSF (3-12 months from now)
- * @returns {string} ISO date string
- */
-function generateRandomOrdDate() {
-    const today = new Date();
-    const monthsToAdd = Math.floor(Math.random() * 9) + 3; // 3-12 months
-    const ordDate = new Date(today);
-    ordDate.setMonth(ordDate.getMonth() + monthsToAdd);
-    return ordDate.toISOString().split('T')[0];
-}
-
-/**
- * Generate random past date within specified days
- * @param {number} maxDaysAgo - Maximum days in the past
- * @returns {string} ISO date string
- */
-function generateRandomPastDate(maxDaysAgo = 180) {
-    const today = new Date();
-    const daysAgo = Math.floor(Math.random() * maxDaysAgo);
-    const pastDate = new Date(today);
-    pastDate.setDate(pastDate.getDate() - daysAgo);
-    return pastDate.toISOString().split('T')[0];
-}
-
-/**
- * Get random element from array
- * @param {Array} array - Array to select from
- * @returns {*} Random element
- */
-function getRandomElement(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
+// Random data generation functions removed for security reasons
 
 /**
  * Calculate completion percentage for personnel

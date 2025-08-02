@@ -26,28 +26,73 @@ class SofunApp {
         try {
             console.log(`🚀 Initializing SOFUN Tracker v${this.version}...`);
             
+            // Start initialization timer
+            window.advancedAudit.startTimer('appInitialization');
+            
+            // Log detailed system information
+            window.advancedAudit.logSystem('INFO', 'SOFUN Tracker application initialization started', {
+                version: this.version,
+                userAgent: navigator.userAgent,
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
+                language: navigator.language,
+                platform: navigator.platform,
+                connectionType: (navigator as any).connection?.effectiveType || 'unknown',
+                cookieEnabled: navigator.cookieEnabled,
+                onlineStatus: navigator.onLine,
+                timestamp: new Date().toISOString()
+            });
+            
             // Load saved data
+            window.advancedAudit.logStorage('DEBUG', 'Loading persisted data from storage');
             this.loadData();
             
             // Initialize all modules
+            window.advancedAudit.logSystem('DEBUG', 'Initializing application modules');
             await this.initializeModules();
             
             // Setup global event handlers
+            window.advancedAudit.logSystem('DEBUG', 'Setting up global event handlers');
             this.setupEventHandlers();
             
-            // Load initial data or generate sample data
+            // Load initial data (no sample data for security)
             if (this.personnelData.length === 0) {
-                this.generateSampleData();
+                console.log('No existing data found - starting with empty dataset');
+                window.advancedAudit.logStorage('INFO', 'No existing personnel data found - clean start', {
+                    isFirstRun: true,
+                    storageUsage: getStorageUsage()
+                });
+            } else {
+                window.advancedAudit.logStorage('INFO', 'Personnel data loaded successfully', {
+                    recordCount: this.personnelData.length,
+                    categories: {
+                        nsf: this.personnelData.filter(p => p.category === 'NSF').length,
+                        regular: this.personnelData.filter(p => p.category === 'Regular').length
+                    },
+                    storageUsage: getStorageUsage()
+                });
             }
             
             // Initial UI update
+            window.advancedAudit.logUI('DEBUG', 'Performing initial UI update');
             this.updateAll();
             
             // Load user preferences
+            window.advancedAudit.logUser('DEBUG', 'Loading user preferences');
             this.loadUserPreferences();
             
             this.initialized = true;
             storage.addAuditEntry(`SOFUN Tracker v${this.version} initialized`);
+            
+            const initTime = window.advancedAudit.endTimer('appInitialization');
+            
+            window.advancedAudit.logSystem('INFO', 'SOFUN Tracker initialization completed successfully', {
+                initializationTime: `${initTime.toFixed(2)}ms`,
+                totalPersonnel: this.personnelData.length,
+                modulesLoaded: ['dashboard', 'storage', 'dataProcessor', 'personnelManager', 'advancedAudit'],
+                memoryUsage: getMemorySnapshot(),
+                storageUsage: getStorageUsage()
+            });
             
             console.log('✅ SOFUN Tracker fully initialized and ready');
             showSuccessMessage('SOFUN Tracker loaded successfully!');
@@ -55,6 +100,12 @@ class SofunApp {
         } catch (error) {
             logError('Application initialization failed', error);
             showErrorMessage('Failed to initialize SOFUN Tracker. Please refresh the page.');
+            window.advancedAudit.logError('Critical application initialization failure', error, {
+                step: 'Application initialization',
+                version: this.version,
+                timestamp: new Date().toISOString(),
+                browser: navigator.userAgent
+            });
         }
     }
 
@@ -236,12 +287,25 @@ class SofunApp {
             
             if (!file) {
                 showErrorMessage('Please select an Excel file first');
+                window.advancedAudit.logUser('WARN', 'File upload attempted without selecting file');
                 return;
             }
+
+            // Start performance timer
+            window.advancedAudit.startTimer('excelProcessing');
+            
+            window.advancedAudit.logData('INFO', 'Excel file processing initiated', {
+                fileName: file.name,
+                fileSize: `${(file.size / 1024).toFixed(2)}KB`,
+                fileType: file.type,
+                lastModified: new Date(file.lastModified).toISOString()
+            });
 
             showSuccessMessage('Processing Excel file...');
             
             const result = await dataProcessor.processExcelFile(file);
+            
+            const processingTime = window.advancedAudit.endTimer('excelProcessing');
             
             if (result.success) {
                 this.personnelData = result.data;
@@ -250,10 +314,28 @@ class SofunApp {
                 this.updateAll();
                 this.addAuditEntry(`Imported Excel file: ${result.recordCount} records processed`);
                 
+                window.advancedAudit.logData('INFO', 'Excel import completed successfully', {
+                    fileName: file.name,
+                    recordCount: result.recordCount,
+                    processingTime: `${processingTime.toFixed(2)}ms`,
+                    warningCount: result.warnings?.length || 0,
+                    dataSize: `${JSON.stringify(result.data).length} chars`,
+                    categories: {
+                        nsf: result.data.filter(p => p.category === 'NSF').length,
+                        regular: result.data.filter(p => p.category === 'Regular').length
+                    }
+                });
+                
                 let message = `✅ Import successful!\n${result.recordCount} personnel records imported.`;
                 if (result.warnings && result.warnings.length > 0) {
                     message += `\n⚠️ ${result.warnings.length} warnings (check console for details)`;
                     console.warn('Import warnings:', result.warnings);
+                    
+                    window.advancedAudit.logValidation('WARN', 'Excel import completed with validation warnings', {
+                        warningCount: result.warnings.length,
+                        sampleWarnings: result.warnings.slice(0, 3),
+                        fileName: file.name
+                    });
                 }
                 
                 showSuccessMessage(message);
@@ -261,6 +343,14 @@ class SofunApp {
                 const errorMsg = `❌ Import failed:\n${result.errors.join('\n')}`;
                 showErrorMessage(errorMsg);
                 this.addAuditEntry(`Excel import failed: ${result.errors.length} errors`);
+                
+                window.advancedAudit.logError('Excel import failed with errors', new Error('Import validation failed'), {
+                    fileName: file.name,
+                    errorCount: result.errors.length,
+                    errors: result.errors,
+                    processingTime: `${processingTime.toFixed(2)}ms`,
+                    fileSize: file.size
+                });
             }
             
             // Clear file input
@@ -268,6 +358,11 @@ class SofunApp {
             
         } catch (error) {
             logError('Excel processing error', error);
+            window.advancedAudit.logError('Critical Excel processing failure', error, {
+                step: 'File processing',
+                hasFile: !!document.getElementById('excelFile')?.files[0],
+                timestamp: new Date().toISOString()
+            });
             showErrorMessage('Failed to process Excel file. Please check the file format.');
         }
     }
@@ -275,22 +370,7 @@ class SofunApp {
     /**
      * Generate sample data
      */
-    generateSampleData() {
-        try {
-            console.log('Generating sample SOFUN data...');
-            
-            this.personnelData = dataProcessor.generateSampleData();
-            this.filteredData = [...this.personnelData];
-            this.saveData();
-            this.updateAll();
-            this.addAuditEntry('Generated sample data for testing');
-            
-            console.log(`✅ Generated ${this.personnelData.length} sample personnel records`);
-        } catch (error) {
-            logError('Sample data generation failed', error);
-            showErrorMessage('Failed to generate sample data');
-        }
-    }
+    // Sample data generation removed for security reasons
 
     /**
      * Download Excel report
@@ -528,9 +608,7 @@ function processExcelFile() {
 /**
  * Generate sample data (global function)
  */
-function generateSampleData() {
-    window.app.generateSampleData();
-}
+// Sample data generation removed for security reasons
 
 /**
  * Download Excel (global function)
@@ -691,6 +769,44 @@ document.addEventListener('DOMContentLoaded', function() {
         window.app.init();
     }, 100);
 });
+
+/* ---------- System Utilities ---------- */
+
+/**
+ * Get current storage usage
+ */
+function getStorageUsage() {
+    try {
+        let total = 0;
+        for (let key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+                total += localStorage[key].length + key.length;
+            }
+        }
+        return `${(total / 1024).toFixed(2)}KB`;
+    } catch (error) {
+        return 'Unable to calculate';
+    }
+}
+
+/**
+ * Get memory usage snapshot
+ */
+function getMemorySnapshot() {
+    try {
+        const memory = (performance as any).memory;
+        if (memory) {
+            return {
+                used: `${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
+                total: `${(memory.totalJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
+                limit: `${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB`
+            };
+        }
+        return { status: 'Memory API not available' };
+    } catch (error) {
+        return { error: 'Unable to get memory info' };
+    }
+}
 
 /* ---------- Development Helpers ---------- */
 

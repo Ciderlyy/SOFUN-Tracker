@@ -1118,66 +1118,9 @@ class SofunDataProcessor {
      * @param {number} regularCount - Number of Regular personnel
      * @returns {Array} Array of sample personnel records
      */
-    generateSampleData(nsfCount = 12, regularCount = 4) {
-        console.log(`Generating sample data: ${nsfCount} NSF, ${regularCount} Regular personnel`);
-        
-        const personnel = [];
-        
-        // Generate NSF personnel
-        for (let i = 0; i < nsfCount; i++) {
-            const person = this.createSamplePerson('NSF', i);
-            personnel.push(person);
-        }
-        
-        // Generate Regular personnel
-        for (let i = 0; i < regularCount; i++) {
-            const person = this.createSamplePerson('Regular', i + nsfCount);
-            personnel.push(person);
-        }
-        
-        console.log(`✅ Generated ${personnel.length} sample personnel records`);
-        return personnel;
-    }
+    // Sample data generation removed for security reasons
 
-    /**
-     * Create single sample person
-     * @param {string} category - Personnel category
-     * @param {number} index - Index for name selection
-     * @returns {Object} Sample personnel record
-     */
-    createSamplePerson(category, index) {
-        const name = SAMPLE_NAMES[index % SAMPLE_NAMES.length];
-        const isNSF = category === 'NSF';
-        
-        return {
-            name: name,
-            category: category,
-            platoon: isNSF ? getRandomElement(['Platoon 1', 'Platoon 2', 'Platoon 3']) : 'COY HQ',
-            unit: isNSF ? getRandomElement(['Platoon 1', 'Platoon 2', 'Platoon 3']) : 'COY HQ',
-            rank: !isNSF ? getRandomElement(RANKS) : null,
-            y1: {
-                ippt: getRandomElement(IPPT_GRADES),
-                ipptDate: generateRandomPastDate(180),
-                voc: getRandomElement(VOC_GRADES),
-                vocDate: generateRandomPastDate(180),
-                atp: getRandomElement(SKILL_GRADES),
-                atpDate: generateRandomPastDate(180)
-            },
-            y2: {
-                ippt: Math.random() > 0.3 ? getRandomElement(IPPT_GRADES) : '',
-                ipptDate: Math.random() > 0.3 ? generateRandomPastDate(90) : null,
-                voc: Math.random() > 0.4 ? getRandomElement(VOC_GRADES) : '',
-                vocDate: Math.random() > 0.4 ? generateRandomPastDate(90) : null,
-                range: Math.random() > 0.5 ? getRandomElement(SKILL_GRADES) : '',
-                rangeDate: Math.random() > 0.5 ? generateRandomPastDate(90) : null
-            },
-            lastUpdated: new Date(),
-            ordDate: isNSF ? generateRandomOrdDate() : null,
-            isORD: false,
-            medicalStatus: Math.random() > 0.8 ? getRandomElement(['Light Duty', 'Excused IPPT']) : 'Fit',
-            remedialTraining: []
-        };
-    }
+    // Sample person creation removed for security reasons
 
     /* ---------- Excel Export ---------- */
 
@@ -1378,13 +1321,7 @@ const dataProcessor = new SofunDataProcessor();
 
 /* ---------- Global Functions (for backward compatibility) ---------- */
 
-/**
- * Global function to generate sample data
- * @returns {Array} Sample personnel data
- */
-function generateSampleData() {
-    return dataProcessor.generateSampleData();
-}
+// Sample data generation removed for security reasons
 
 /**
  * Global function to process Excel file

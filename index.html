@@ -22,6 +22,9 @@
     </style>
 </head>
 <body>
+    <!-- Decorative Background Canvas -->
+    <canvas id="decorative-background"></canvas>
+    
     <div class="container">
         <div class="header">
             <h1>SOFUN Tracker System v2.0</h1>
@@ -123,29 +126,132 @@
 
         <div class="charts-section">
             <h2>📊 Executive Dashboard</h2>
-            <div class="charts-grid">
-                <div>
+            
+            <!-- Chart Selection Controls -->
+            <div class="chart-selection-panel">
+                <h3>📋 Chart Selection</h3>
+                <div class="chart-selection-grid">
+                    <div class="chart-selection-group">
+                        <h4>🏃‍♂️ IPPT Performance</h4>
+                        <div class="chart-options">
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY1Ippt" onchange="toggleChart('y1Ippt')">
+                                <span>Y1 IPPT Performance</span>
+                            </label>
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY2Ippt" onchange="toggleChart('y2Ippt')" checked>
+                                <span>Y2 IPPT Performance</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-selection-group">
+                        <h4>🎯 VOC Results</h4>
+                        <div class="chart-options">
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY1Voc" onchange="toggleChart('y1Voc')">
+                                <span>Y1 VOC Results</span>
+                            </label>
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY2Voc" onchange="toggleChart('y2Voc')" checked>
+                                <span>Y2 VOC Results</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-selection-group">
+                        <h4>🎯 Range/Combat Skills</h4>
+                        <div class="chart-options">
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY1Atp" onchange="toggleChart('y1Atp')">
+                                <span>Y1 ATP Performance</span>
+                            </label>
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartY2Range" onchange="toggleChart('y2Range')" checked>
+                                <span>Y2 Range/CS Performance</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-selection-group">
+                        <h4>📈 Analysis</h4>
+                        <div class="chart-options">
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartPlatoon" onchange="toggleChart('platoon')" checked>
+                                <span>Platoon Performance</span>
+                            </label>
+                            <label class="chart-option">
+                                <input type="checkbox" id="chartComparison" onchange="toggleChart('comparison')">
+                                <span>Y1 vs Y2 Comparison</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-selection-actions">
+                    <button class="btn btn-primary" onclick="selectAllCharts()">📊 Show All Charts</button>
+                    <button class="btn btn-secondary" onclick="clearAllCharts()">🗑️ Clear All</button>
+                    <button class="btn btn-info" onclick="resetDefaultCharts()">🔄 Reset to Default</button>
+                </div>
+            </div>
+            
+            <!-- Dynamic Charts Grid -->
+            <div class="charts-grid" id="chartsGrid">
+                <!-- Charts will be dynamically generated here -->
+                <div class="chart-wrapper" id="chart-y2Ippt" style="display: block;">
                     <div class="chart-title">Y2 IPPT Performance</div>
                     <div class="chart-container">
-                        <canvas id="ipptChart"></canvas>
+                        <canvas id="y2IpptChart"></canvas>
                     </div>
                 </div>
-                <div>
+                
+                <div class="chart-wrapper" id="chart-y2Voc" style="display: block;">
                     <div class="chart-title">Y2 VOC Results</div>
                     <div class="chart-container">
-                        <canvas id="vocChart"></canvas>
+                        <canvas id="y2VocChart"></canvas>
                     </div>
                 </div>
-                <div>
+                
+                <div class="chart-wrapper" id="chart-y2Range" style="display: block;">
                     <div class="chart-title">Y2 Range/CS Performance</div>
                     <div class="chart-container">
-                        <canvas id="rangeChart"></canvas>
+                        <canvas id="y2RangeChart"></canvas>
                     </div>
                 </div>
-                <div>
+                
+                <div class="chart-wrapper" id="chart-platoon" style="display: block;">
                     <div class="chart-title">Platoon Performance Comparison</div>
                     <div class="chart-container">
                         <canvas id="platoonChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Y1 Charts (Hidden by default) -->
+                <div class="chart-wrapper" id="chart-y1Ippt" style="display: none;">
+                    <div class="chart-title">Y1 IPPT Performance</div>
+                    <div class="chart-container">
+                        <canvas id="y1IpptChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-wrapper" id="chart-y1Voc" style="display: none;">
+                    <div class="chart-title">Y1 VOC Results</div>
+                    <div class="chart-container">
+                        <canvas id="y1VocChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-wrapper" id="chart-y1Atp" style="display: none;">
+                    <div class="chart-title">Y1 ATP Performance</div>
+                    <div class="chart-container">
+                        <canvas id="y1AtpChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-wrapper" id="chart-comparison" style="display: none;">
+                    <div class="chart-title">Y1 vs Y2 Performance Comparison</div>
+                    <div class="chart-container">
+                        <canvas id="comparisonChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -264,10 +370,67 @@
             </div>
 
             <div id="audit" class="category-content">
-                <h3>Audit Log</h3>
-                <div class="audit-log" id="auditLog">
-                    <div class="audit-entry">System initialized</div>
+                <h3>Advanced Technical Audit Log</h3>
+                
+                <!-- Audit Controls -->
+                <div class="audit-controls">
+                    <div class="audit-filters">
+                        <select id="auditCategoryFilter" onchange="filterAdvancedAudit()">
+                            <option value="">All Categories</option>
+                            <option value="SYSTEM">🖥️ System</option>
+                            <option value="DATA">📊 Data</option>
+                            <option value="USER">👤 User</option>
+                            <option value="PERFORMANCE">⚡ Performance</option>
+                            <option value="SECURITY">🔒 Security</option>
+                            <option value="ERROR">❌ Error</option>
+                            <option value="NETWORK">🌐 Network</option>
+                            <option value="STORAGE">💾 Storage</option>
+                            <option value="UI">🎨 UI</option>
+                            <option value="VALIDATION">✅ Validation</option>
+                        </select>
+                        
+                        <select id="auditLevelFilter" onchange="filterAdvancedAudit()">
+                            <option value="">All Levels</option>
+                            <option value="DEBUG">Debug</option>
+                            <option value="INFO">Info</option>
+                            <option value="WARN">Warning</option>
+                            <option value="ERROR">Error</option>
+                        </select>
+                        
+                        <select id="auditTimeFilter" onchange="filterAdvancedAudit()">
+                            <option value="">All Time</option>
+                            <option value="5">Last 5 minutes</option>
+                            <option value="15">Last 15 minutes</option>
+                            <option value="60">Last hour</option>
+                            <option value="240">Last 4 hours</option>
+                        </select>
+                    </div>
+                    
+                    <div class="audit-actions">
+                        <button class="btn btn-info" onclick="refreshAdvancedAudit()">🔄 Refresh</button>
+                        <button class="btn btn-warning" onclick="exportAdvancedAudit()">📄 Export</button>
+                        <button class="btn btn-danger" onclick="clearAdvancedAudit()">🗑️ Clear</button>
+                        <button class="btn btn-secondary" onclick="showAuditSummary()">📊 Summary</button>
+                    </div>
                 </div>
+                
+                <!-- System Summary -->
+                <div class="audit-summary" id="auditSummary" style="display: none;">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <!-- Advanced Audit Log Display -->
+                <div class="advanced-audit-log" id="advancedAuditLog">
+                    <div class="audit-loading">Loading advanced audit log...</div>
+                </div>
+                
+                <!-- Legacy Simple Audit Log (fallback) -->
+                <details class="legacy-audit-section">
+                    <summary>📋 Simple Audit Log (Legacy)</summary>
+                    <div class="audit-log" id="auditLog">
+                        <div class="audit-entry">System initialized</div>
+                    </div>
+                </details>
             </div>
         </div>
     </div>
@@ -455,6 +618,8 @@
     <script src="js/data-processor.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/personnel-manager.js"></script>
+    <script src="js/decorative-background.js"></script>
+    <script src="js/advanced-audit.js"></script>
     <script src="js/app.js"></script>
 
 
@@ -476,6 +641,149 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('.dark-mode-toggle').textContent = '☀️ Light Mode';
     }
 });
+
+/* ---------- Advanced Audit Functions ---------- */
+
+function filterAdvancedAudit() {
+    const categoryFilter = document.getElementById('auditCategoryFilter').value;
+    const levelFilter = document.getElementById('auditLevelFilter').value;
+    const timeFilter = document.getElementById('auditTimeFilter').value;
+    
+    const filter = {};
+    if (categoryFilter) filter.category = categoryFilter;
+    if (levelFilter) filter.level = levelFilter;
+    if (timeFilter) filter.timeRange = parseInt(timeFilter);
+    
+    const auditLog = window.advancedAudit.getAuditLog(filter);
+    displayFilteredAuditLog(auditLog);
+    
+    window.advancedAudit.logUI('DEBUG', 'Audit log filtered', {
+        category: categoryFilter || 'All',
+        level: levelFilter || 'All',
+        timeRange: timeFilter || 'All',
+        resultCount: auditLog.length
+    });
+}
+
+function displayFilteredAuditLog(auditLog) {
+    const auditDiv = document.getElementById('advancedAuditLog');
+    if (!auditDiv) return;
+    
+    if (auditLog.length === 0) {
+        auditDiv.innerHTML = '<div class="audit-loading">No audit entries match the current filters.</div>';
+        return;
+    }
+    
+    auditDiv.innerHTML = auditLog.map(entry => {
+        const icon = window.advancedAudit.logCategories[entry.category] || '📝';
+        const levelClass = `audit-level-${entry.level.toLowerCase()}`;
+        
+        return `
+            <div class="advanced-audit-entry ${levelClass}" data-category="${entry.category}">
+                <div class="audit-header">
+                    <span class="audit-icon">${icon}</span>
+                    <span class="audit-category">[${entry.category}]</span>
+                    <span class="audit-level">${entry.level}</span>
+                    <span class="audit-time">${entry.relativeTime}</span>
+                    <span class="audit-timestamp">${new Date(entry.timestamp).toLocaleString()}</span>
+                </div>
+                <div class="audit-message">${escapeHtml(entry.message)}</div>
+                ${Object.keys(entry.details).length > 0 ? `
+                    <details class="audit-details">
+                        <summary>📋 Details (${Object.keys(entry.details).length} items)</summary>
+                        <pre class="audit-details-content">${escapeHtml(JSON.stringify(entry.details, null, 2))}</pre>
+                    </details>
+                ` : ''}
+                ${entry.stackTrace && entry.level === 'ERROR' ? `
+                    <details class="audit-stack">
+                        <summary>🔍 Stack Trace</summary>
+                        <pre class="audit-stack-content">${escapeHtml(entry.stackTrace)}</pre>
+                    </details>
+                ` : ''}
+                ${entry.performance ? `
+                    <details class="audit-details">
+                        <summary>⚡ Performance Snapshot</summary>
+                        <pre class="audit-details-content">${escapeHtml(JSON.stringify(entry.performance, null, 2))}</pre>
+                    </details>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function refreshAdvancedAudit() {
+    window.advancedAudit.updateAdvancedAuditDisplay();
+    window.advancedAudit.logUI('INFO', 'Advanced audit log refreshed');
+}
+
+function exportAdvancedAudit() {
+    window.advancedAudit.exportAuditLog();
+}
+
+function clearAdvancedAudit() {
+    if (confirm('⚠️ This will clear the entire advanced audit log. This action cannot be undone. Continue?')) {
+        window.advancedAudit.clearAuditLog();
+        window.advancedAudit.logSecurity('WARN', 'Advanced audit log cleared by user', {
+            action: 'AUDIT_CLEAR',
+            userAgent: navigator.userAgent,
+            timestamp: new Date().toISOString()
+        });
+    }
+}
+
+function showAuditSummary() {
+    const summaryDiv = document.getElementById('auditSummary');
+    const isHidden = summaryDiv.style.display === 'none';
+    
+    if (isHidden) {
+        const summary = window.advancedAudit.getSystemSummary();
+        
+        summaryDiv.innerHTML = `
+            <h4>📊 System Audit Summary</h4>
+            <div class="audit-summary-grid">
+                <div class="audit-summary-item">
+                    <span class="number">${summary.totalEntries}</span>
+                    <span class="label">Total Entries</span>
+                </div>
+                <div class="audit-summary-item">
+                    <span class="number">${summary.entriesLastHour}</span>
+                    <span class="label">Last Hour</span>
+                </div>
+                <div class="audit-summary-item">
+                    <span class="number">${summary.errorCount}</span>
+                    <span class="label">Total Errors</span>
+                </div>
+                <div class="audit-summary-item">
+                    <span class="number">${Object.keys(summary.categories).length}</span>
+                    <span class="label">Categories Active</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <strong>📁 Category Breakdown:</strong><br>
+                ${Object.entries(summary.categories).map(([cat, count]) => 
+                    `${window.advancedAudit.logCategories[cat] || '📝'} ${cat}: ${count}`
+                ).join(' | ')}
+            </div>
+            
+            ${summary.topErrors.length > 0 ? `
+                <div style="margin-top: 15px;">
+                    <strong>⚠️ Top Errors:</strong><br>
+                    ${summary.topErrors.map(([error, data]) => 
+                        `• ${error}: ${data.count} occurrences`
+                    ).join('<br>')}
+                </div>
+            ` : ''}
+        `;
+        
+        summaryDiv.style.display = 'block';
+        window.advancedAudit.logUI('INFO', 'Audit summary displayed', summary);
+    } else {
+        summaryDiv.style.display = 'none';
+        window.advancedAudit.logUI('DEBUG', 'Audit summary hidden');
+    }
+}
+
 </script>
 </body>
 </html>

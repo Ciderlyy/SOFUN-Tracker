@@ -5,36 +5,88 @@
 
 /* ---------- Serial Numbers ---------- */
 .serial-number {
-    font-weight: 600;
-    color: #3498db;
+    font-weight: 700;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-align: center;
-    min-width: 40px;
-    font-size: 0.9em;
+    min-width: 50px;
+    font-size: 1em;
+    padding: 4px 8px;
+    border-radius: 20px;
+    position: relative;
+    transition: var(--transition-fast);
+}
+
+.serial-number::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+    border-radius: 50%;
+    z-index: -1;
+    transition: var(--transition-fast);
+}
+
+tr:hover .serial-number::before {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, rgba(79, 172, 254, 0.2) 0%, rgba(0, 242, 254, 0.2) 100%);
+}
+
+tr:hover .serial-number {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4));
 }
 
 /* ---------- Buttons ---------- */
 .btn {
-    padding: 12px 25px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--border-radius-small);
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     margin: 5px;
     font-size: 0.9em;
     text-decoration: none;
     display: inline-block;
     text-align: center;
     min-width: auto;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition);
+}
+
+.btn:hover::before {
+    left: 100%;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
 }
 
 .btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px) scale(0.98);
+    transition: var(--transition-fast);
 }
 
 .btn-primary {
@@ -123,17 +175,38 @@
 /* ---------- Status Badges ---------- */
 .status-badge {
     display: inline-block;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.75em;
+    padding: 6px 14px;
+    border-radius: 25px;
+    font-size: 0.8em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    transition: all 0.2s ease;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition);
+}
+
+.status-badge:hover::before {
+    left: 100%;
 }
 
 .status-badge:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* PES Badge */
