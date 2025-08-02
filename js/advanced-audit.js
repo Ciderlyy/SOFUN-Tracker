@@ -176,14 +176,14 @@ class AdvancedAuditLogger {
      */
     getCurrentPerformanceSnapshot() {
         const nav = performance.getEntriesByType('navigation')[0];
-        const memory = (performance as any).memory;
+        const memory = performance.memory;
         
         return {
             memoryUsed: memory ? `${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB` : 'N/A',
             memoryLimit: memory ? `${(memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2)}MB` : 'N/A',
             domLoadTime: nav ? `${nav.domContentLoadedEventEnd - nav.navigationStart}ms` : 'N/A',
             pageLoadTime: nav ? `${nav.loadEventEnd - nav.navigationStart}ms` : 'N/A',
-            connectionType: (navigator as any).connection?.effectiveType || 'Unknown'
+            connectionType: navigator.connection?.effectiveType || 'Unknown'
         };
     }
 

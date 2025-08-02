@@ -15,6 +15,8 @@ class SofunApp {
         this.currentCategory = 'nsf';
         this.initialized = false;
         this.version = APP_CONFIG.version;
+        this.originalWorkbook = null; // Store original Excel file
+        this.originalFileName = null; // Store original filename
     }
 
     /* ---------- Application Lifecycle ---------- */
@@ -37,7 +39,7 @@ class SofunApp {
                 colorScheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
                 language: navigator.language,
                 platform: navigator.platform,
-                connectionType: (navigator as any).connection?.effectiveType || 'unknown',
+                connectionType: navigator.connection?.effectiveType || 'unknown',
                 cookieEnabled: navigator.cookieEnabled,
                 onlineStatus: navigator.onLine,
                 timestamp: new Date().toISOString()
@@ -80,6 +82,9 @@ class SofunApp {
             // Load user preferences
             window.advancedAudit.logUser('DEBUG', 'Loading user preferences');
             this.loadUserPreferences();
+            
+            // Ensure file upload button is ready
+            this.initializeFileUpload();
             
             this.initialized = true;
             storage.addAuditEntry(`SOFUN Tracker v${this.version} initialized`);
@@ -132,15 +137,24 @@ class SofunApp {
      */
     setupEventHandlers() {
         try {
-            // File upload handler
-            const fileInput = document.getElementById('excelFile');
-            if (fileInput) {
-                fileInput.addEventListener('change', (e) => {
+                    // File upload handler
+        const fileInput = document.getElementById('excelFile');
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                // Try new file handling first, fallback to old method if issues
+                try {
+                    this.handleFileSelection(e);
+                } catch (error) {
+                    console.warn('New file handling failed, using fallback:', error);
+                    // Fallback: old direct processing
                     if (e.target.files.length > 0) {
+                        const processBtn = document.getElementById('processFileBtn');
+                        if (processBtn) processBtn.disabled = false;
                         this.processExcelFile();
                     }
-                });
-            }
+                }
+            });
+        }
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
@@ -278,17 +292,85 @@ class SofunApp {
     /* ---------- Data Processing ---------- */
 
     /**
+     * Handle file selection with status updates
+     * @param {Event} event - File input change event
+     */
+    handleFileSelection(event) {
+        const file = event.target.files[0];
+        const processBtn = document.getElementById('processFileBtn');
+        const fileStatus = document.getElementById('fileStatus');
+        
+        console.log('🔍 File selection debug:', {
+            hasFile: !!file,
+            fileName: file?.name,
+            fileSize: file ? `${(file.size / 1024).toFixed(1)}KB` : 'N/A',
+            processBtn: !!processBtn,
+            fileStatus: !!fileStatus,
+            processBtnDisabled: processBtn?.disabled
+        });
+        
+        if (!file) {
+            // No file selected
+            if (processBtn) processBtn.disabled = true;
+            if (fileStatus) {
+                fileStatus.textContent = '';
+                fileStatus.className = 'file-status';
+            }
+            return;
+        }
+        
+        // ALWAYS enable the process button when a file is selected (remove strict validation)
+        if (processBtn) {
+            processBtn.disabled = false;
+            console.log('✅ Process button enabled for file:', file.name);
+        }
+        
+        // Show file info (but don't block processing)
+        if (fileStatus) {
+            fileStatus.textContent = `📄 File selected: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`;
+            fileStatus.className = 'file-status ready';
+        }
+        
+        // Simple validation warning (but don't prevent processing)
+        const validTypes = ['.xlsx', '.xls'];
+        const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+        
+        if (!validTypes.includes(fileExtension)) {
+            console.warn('⚠️ File type warning:', fileExtension, 'not in', validTypes);
+            if (fileStatus) {
+                fileStatus.textContent = `⚠️ Warning: ${file.name} may not be a valid Excel file. Click Process to try anyway.`;
+                fileStatus.className = 'file-status ready';
+            }
+        }
+        
+        console.log('📁 File ready for processing:', file.name);
+    }
+
+    /**
      * Process uploaded Excel file
      */
     async processExcelFile() {
         try {
             const fileInput = document.getElementById('excelFile');
             const file = fileInput?.files[0];
+            const fileStatus = document.getElementById('fileStatus');
+            const processBtn = document.getElementById('processFileBtn');
             
             if (!file) {
                 showErrorMessage('Please select an Excel file first');
                 window.advancedAudit.logUser('WARN', 'File upload attempted without selecting file');
                 return;
+            }
+
+            // Update status to processing
+            if (fileStatus) {
+                fileStatus.textContent = '⏳ Processing Excel file...';
+                fileStatus.className = 'file-status processing';
+            }
+            
+            if (processBtn) {
+                processBtn.disabled = true;
+                processBtn.innerHTML = '⏳ Processing...';
             }
 
             // Start performance timer
@@ -310,6 +392,11 @@ class SofunApp {
             if (result.success) {
                 this.personnelData = result.data;
                 this.filteredData = [...this.personnelData];
+                
+                // Store original workbook and filename for modified exports
+                this.originalWorkbook = result.originalWorkbook;
+                this.originalFileName = file.name;
+                
                 this.saveData();
                 this.updateAll();
                 this.addAuditEntry(`Imported Excel file: ${result.recordCount} records processed`);
@@ -339,10 +426,22 @@ class SofunApp {
                 }
                 
                 showSuccessMessage(message);
+                
+                // Update status to success
+                if (fileStatus) {
+                    fileStatus.textContent = `✅ Successfully imported ${result.recordCount} personnel records`;
+                    fileStatus.className = 'file-status success';
+                }
             } else {
                 const errorMsg = `❌ Import failed:\n${result.errors.join('\n')}`;
                 showErrorMessage(errorMsg);
                 this.addAuditEntry(`Excel import failed: ${result.errors.length} errors`);
+                
+                // Update status to error
+                if (fileStatus) {
+                    fileStatus.textContent = `❌ Import failed: ${result.errors.length} error(s)`;
+                    fileStatus.className = 'file-status error';
+                }
                 
                 window.advancedAudit.logError('Excel import failed with errors', new Error('Import validation failed'), {
                     fileName: file.name,
@@ -353,11 +452,42 @@ class SofunApp {
                 });
             }
             
+            // Reset button
+            if (processBtn) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '📊 Process File';
+            }
+            
             // Clear file input
             fileInput.value = '';
             
+            // Reset file status after success (allow new file)
+            if (result.success) {
+                setTimeout(() => {
+                    if (fileStatus) {
+                        fileStatus.textContent = '';
+                        fileStatus.className = 'file-status';
+                    }
+                    if (processBtn) {
+                        processBtn.disabled = true;
+                    }
+                }, 3000);
+            }
+            
         } catch (error) {
             logError('Excel processing error', error);
+            
+            // Update UI on error
+            if (fileStatus) {
+                fileStatus.textContent = '❌ Critical error during file processing';
+                fileStatus.className = 'file-status error';
+            }
+            
+            if (processBtn) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '📊 Process File';
+            }
+            
             window.advancedAudit.logError('Critical Excel processing failure', error, {
                 step: 'File processing',
                 hasFile: !!document.getElementById('excelFile')?.files[0],
@@ -382,8 +512,47 @@ class SofunApp {
                 return;
             }
             
-            dataProcessor.downloadExcel(this.personnelData, this.auditLog);
-            this.addAuditEntry(`Downloaded Excel report (${this.personnelData.length} records)`);
+            // Check if we have original workbook for modified export
+            if (this.originalWorkbook && this.originalFileName) {
+                const choice = confirm(
+                    '📄 EXCEL EXPORT OPTIONS\n\n' +
+                    '✅ OK: Download MODIFIED original file\n' +
+                    '   • Preserves original format and structure\n' +
+                    '   • Updates data with your changes\n' +
+                    '   • Keeps existing formulas and formatting\n\n' +
+                    '❌ Cancel: Download NEW format file\n' +
+                    '   • Creates fresh SOFUN Tracker format\n' +
+                    '   • Includes dashboard and audit logs\n' +
+                    '   • Standard export format\n\n' +
+                    'Choose your preferred export method:'
+                );
+                
+                if (choice) {
+                    // User chose modified original
+                    const filename = dataProcessor.downloadModifiedExcel(
+                        this.personnelData, 
+                        this.originalWorkbook, 
+                        this.originalFileName
+                    );
+                    if (filename) {
+                        this.addAuditEntry(`Downloaded modified Excel file: ${filename} (${this.personnelData.length} records)`);
+                    }
+                } else {
+                    // User chose new format
+                    dataProcessor.downloadExcel(this.personnelData, this.auditLog);
+                    this.addAuditEntry(`Downloaded new format Excel report (${this.personnelData.length} records)`);
+                }
+            } else {
+                // No original workbook available, use new format
+                dataProcessor.downloadExcel(this.personnelData, this.auditLog);
+                this.addAuditEntry(`Downloaded Excel report (${this.personnelData.length} records)`);
+                
+                showSuccessMessage(
+                    'Exported as new format Excel file.\n\n' +
+                    '💡 Tip: To get modified original files, import an Excel file first!'
+                );
+            }
+            
         } catch (error) {
             logError('Excel download failed', error);
             showErrorMessage('Failed to generate Excel file');
@@ -525,6 +694,43 @@ class SofunApp {
     }
 
     /**
+     * Initialize file upload components
+     */
+    initializeFileUpload() {
+        try {
+            const processBtn = document.getElementById('processFileBtn');
+            const fileInput = document.getElementById('excelFile');
+            const fileStatus = document.getElementById('fileStatus');
+            
+            console.log('🔧 Initializing file upload components:', {
+                processBtn: !!processBtn,
+                fileInput: !!fileInput,
+                fileStatus: !!fileStatus
+            });
+            
+            // Ensure process button starts enabled (user can always try to process)
+            if (processBtn) {
+                processBtn.disabled = false;
+                console.log('✅ Process button initialized as enabled');
+            }
+            
+            // Clear any existing status
+            if (fileStatus) {
+                fileStatus.textContent = '';
+                fileStatus.className = 'file-status';
+            }
+            
+            // Test file input functionality
+            if (fileInput) {
+                console.log('📁 File input ready, accept attribute:', fileInput.accept);
+            }
+            
+        } catch (error) {
+            console.error('❌ File upload initialization error:', error);
+        }
+    }
+
+    /**
      * Load user preferences
      */
     loadUserPreferences() {
@@ -545,6 +751,8 @@ class SofunApp {
             if (preferences.defaultCategory) {
                 personnelManager.switchCategory(preferences.defaultCategory);
             }
+            
+
             
         } catch (error) {
             logError('Preference loading failed', error);
@@ -602,6 +810,23 @@ window.dataProcessor = dataProcessor;
  * Process Excel file (global function)
  */
 function processExcelFile() {
+    console.log('🚀 Process Excel File button clicked');
+    
+    // Check if app is initialized
+    if (!window.app) {
+        console.error('❌ SOFUN App not initialized yet');
+        alert('Application is still loading. Please wait a moment and try again.');
+        return;
+    }
+    
+    // Force enable the button if it's disabled due to validation issues
+    const processBtn = document.getElementById('processFileBtn');
+    if (processBtn && processBtn.disabled) {
+        console.warn('Process button was disabled, force enabling for processing');
+        processBtn.disabled = false;
+    }
+    
+    // Call the app's processExcelFile method
     window.app.processExcelFile();
 }
 
@@ -758,6 +983,8 @@ function deletePersonnel() {
     }
 }
 
+
+
 /* ---------- Application Initialization ---------- */
 
 // Initialize app when DOM is loaded
@@ -794,7 +1021,7 @@ function getStorageUsage() {
  */
 function getMemorySnapshot() {
     try {
-        const memory = (performance as any).memory;
+        const memory = performance.memory;
         if (memory) {
             return {
                 used: `${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
@@ -818,7 +1045,43 @@ window.sofunDebug = {
     personnelManager: personnelManager,
     dataProcessor: dataProcessor,
     getStats: () => window.app.getAppStats(),
-    printInfo: () => window.app.printAppInfo()
+    printInfo: () => window.app.printAppInfo(),
+    testFileUpload: () => {
+        const processBtn = document.getElementById('processFileBtn');
+        const fileInput = document.getElementById('excelFile');
+        const fileStatus = document.getElementById('fileStatus');
+        
+        console.log('🧪 File Upload Test Results:');
+        console.log('Process Button:', processBtn ? 'Found' : 'NOT FOUND', processBtn?.disabled ? '(DISABLED)' : '(ENABLED)');
+        console.log('File Input:', fileInput ? 'Found' : 'NOT FOUND');
+        console.log('File Status:', fileStatus ? 'Found' : 'NOT FOUND');
+        console.log('Selected Files:', fileInput?.files?.length || 0);
+        
+        if (processBtn) {
+            console.log('✅ You can click the Process File button');
+        } else {
+            console.log('❌ Process File button not found - check HTML');
+        }
+        
+        return {
+            processBtn: !!processBtn,
+            fileInput: !!fileInput,
+            fileStatus: !!fileStatus,
+            buttonEnabled: !processBtn?.disabled,
+            filesSelected: fileInput?.files?.length || 0
+        };
+    }
 };
 
 console.log('✅ SOFUN Main Application loaded - Ready to initialize!');
+
+// Quick test to verify functions are available
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        console.log('🧪 Testing functions availability:', {
+            processExcelFile: typeof processExcelFile,
+            app: !!window.app,
+            appInitialized: window.app?.initialized
+        });
+    }, 1000);
+});

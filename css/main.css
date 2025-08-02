@@ -367,6 +367,78 @@ body.dark-mode #decorative-background {
     border-color: #3498db;
 }
 
+/* File Upload Container */
+.file-upload-container {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+    margin: 10px 0;
+}
+
+.file-upload-container input[type="file"] {
+    flex: 1;
+    min-width: 250px;
+    padding: 10px 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--surface-color);
+    color: var(--text-color);
+    font-size: 0.9em;
+    height: auto;
+}
+
+.file-upload-container input[type="file"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.file-upload-container .btn {
+    height: auto;
+    padding: 10px 20px;
+    white-space: nowrap;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* File Status Display */
+.file-status {
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.file-status.ready {
+    background: rgba(52, 152, 219, 0.1);
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.file-status.processing {
+    background: rgba(243, 156, 18, 0.1);
+    color: #f39c12;
+    border: 1px solid #f39c12;
+}
+
+.file-status.success {
+    background: rgba(39, 174, 96, 0.1);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.file-status.error {
+    background: rgba(231, 76, 60, 0.1);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+
+
 /* ---------- Tables ---------- */
 .table-container {
     overflow-x: auto;

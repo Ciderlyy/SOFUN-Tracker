@@ -37,7 +37,13 @@
             <div class="controls">
                 <div class="control-group">
                     <label>Upload SOFUN Tracker Excel File:</label>
-                    <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                    <div class="file-upload-container">
+                        <input type="file" id="excelFile" accept=".xlsx,.xls" />
+                        <button class="btn btn-primary" id="processFileBtn" onclick="processExcelFile()">
+                            📊 Process File
+                        </button>
+                    </div>
+                    <div id="fileStatus" class="file-status"></div>
                     <small>Excel file must contain sheets named "IPPT", "RANGE", and "VOC"</small>
                 </div>
                 <button class="btn btn-warning" onclick="downloadImprovedExcel()">Download Excel</button>

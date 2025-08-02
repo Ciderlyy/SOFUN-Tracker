@@ -529,6 +529,19 @@ class PersonnelManager {
                 return; // Validation errors already shown
             }
             
+            // Compare changes and show confirmation dialog
+            const changes = this.comparePersonnelData(person, updatedData);
+            if (changes.length === 0) {
+                showSuccessMessage('No changes were made');
+                this.closeEditModal();
+                return;
+            }
+            
+            // Show confirmation dialog with changes
+            if (!this.confirmChanges(person.name, changes)) {
+                return; // User cancelled
+            }
+            
             // Update the person object
             this.updatePersonnelRecord(person, updatedData);
             
@@ -537,18 +550,13 @@ class PersonnelManager {
                 window.app.saveData();
             }
             
-            storage.addAuditEntry(`Updated record for ${person.name}`);
+            storage.addAuditEntry(`Updated record for ${person.name}: ${changes.length} field(s) changed`);
             this.closeEditModal();
             
-            // Refresh the display immediately
-            if (window.app && window.app.updateAll) {
-                window.app.updateAll();
-            } else if (window.app && window.app.applyFilters) {
-                // Fallback to apply filters which should update everything
-                window.app.applyFilters();
-            }
+            // Force immediate refresh of all UI components
+            this.refreshAfterEdit();
             
-            showSuccessMessage('Personnel record updated successfully');
+            showSuccessMessage(`✅ Personnel record updated successfully!\n${changes.length} field(s) changed.`);
             
         } catch (error) {
             logError('Personnel save failed', error);
@@ -649,13 +657,169 @@ class PersonnelManager {
         person.ordDate = data.ordDate;
         person.medicalStatus = data.medicalStatus;
         
-        // Update Y1 data
-        Object.assign(person.y1, data.y1);
+        // Update Y1 data (if exists)
+        if (data.y1) {
+            Object.assign(person.y1, data.y1);
+        }
         
-        // Update Y2 data
-        Object.assign(person.y2, data.y2);
+        // Update Y2 data (if exists)
+        if (data.y2) {
+            Object.assign(person.y2, data.y2);
+        }
+        
+        // Update work year data (if exists)
+        if (data.workYear) {
+            if (!person.workYear) {
+                person.workYear = {};
+            }
+            Object.assign(person.workYear, data.workYear);
+        }
         
         person.lastUpdated = new Date();
+    }
+
+    /**
+     * Compare personnel data to detect changes
+     * @param {Object} original - Original personnel data
+     * @param {Object} updated - Updated personnel data
+     * @returns {Array} Array of change objects
+     */
+    comparePersonnelData(original, updated) {
+        const changes = [];
+        
+        // Helper function to format values for display
+        const formatValue = (value) => {
+            if (value === null || value === undefined || value === '') {
+                return '(empty)';
+            }
+            if (typeof value === 'object') {
+                return JSON.stringify(value);
+            }
+            return String(value);
+        };
+        
+        // Helper function to get nested value
+        const getNestedValue = (obj, path) => {
+            return path.split('.').reduce((curr, key) => curr?.[key], obj);
+        };
+        
+        // Compare basic fields
+        const basicFields = [
+            { key: 'name', label: 'Name' },
+            { key: 'pes', label: 'PES' },
+            { key: 'platoon', label: 'Platoon' },
+            { key: 'ordDate', label: 'ORD Date' },
+            { key: 'medicalStatus', label: 'Medical Status' }
+        ];
+        
+        basicFields.forEach(field => {
+            const originalValue = original[field.key];
+            const updatedValue = updated[field.key];
+            
+            if (originalValue !== updatedValue) {
+                changes.push({
+                    field: field.label,
+                    from: formatValue(originalValue),
+                    to: formatValue(updatedValue)
+                });
+            }
+        });
+        
+        // Compare assessment data (Y1, Y2, WorkYear)
+        const assessmentGroups = ['y1', 'y2', 'workYear'];
+        
+        assessmentGroups.forEach(group => {
+            const originalGroup = original[group] || {};
+            const updatedGroup = updated[group] || {};
+            
+            if (updatedGroup && Object.keys(updatedGroup).length > 0) {
+                const assessmentFields = ['ippt', 'ipptDate', 'voc', 'vocDate', 'atp', 'atpDate', 'range', 'rangeDate', 'cs', 'csDate'];
+                
+                assessmentFields.forEach(field => {
+                    const originalValue = originalGroup[field];
+                    const updatedValue = updatedGroup[field];
+                    
+                    if (originalValue !== updatedValue && updatedValue !== undefined) {
+                        const groupLabel = group === 'y1' ? 'Y1' : group === 'y2' ? 'Y2' : 'Work Year';
+                        const fieldLabel = field.charAt(0).toUpperCase() + field.slice(1);
+                        
+                        changes.push({
+                            field: `${groupLabel} ${fieldLabel}`,
+                            from: formatValue(originalValue),
+                            to: formatValue(updatedValue)
+                        });
+                    }
+                });
+            }
+        });
+        
+        return changes;
+    }
+
+    /**
+     * Show confirmation dialog with changes
+     * @param {string} personnelName - Name of the personnel being edited
+     * @param {Array} changes - Array of changes
+     * @returns {boolean} True if confirmed, false if cancelled
+     */
+    confirmChanges(personnelName, changes) {
+        let message = `🔄 CONFIRM CHANGES FOR: ${personnelName}\n\n`;
+        message += `You are about to make ${changes.length} change(s):\n\n`;
+        
+        changes.forEach((change, index) => {
+            message += `${index + 1}. ${change.field}:\n`;
+            message += `   From: ${change.from}\n`;
+            message += `   To: ${change.to}\n\n`;
+        });
+        
+        message += '⚠️ This action cannot be undone.\n\n';
+        message += 'Do you want to proceed with these changes?';
+        
+        return confirm(message);
+    }
+
+    /**
+     * Force refresh after edit to ensure list is updated immediately
+     */
+    refreshAfterEdit() {
+        try {
+            // Update the filtered data array
+            if (window.app) {
+                window.app.filteredData = [...window.app.personnelData];
+                
+                // Apply current filters to update filtered data
+                window.app.filteredData = this.applyFilters(window.app.personnelData);
+                
+                // Force update all UI components
+                if (window.app.updateAll) {
+                    window.app.updateAll();
+                }
+                
+                // Specifically update the current table view
+                this.updateAllTables(window.app.filteredData);
+                
+                // Update dashboard with fresh data
+                if (window.dashboard && window.dashboard.updateDashboard) {
+                    window.dashboard.updateDashboard(window.app.filteredData);
+                }
+                
+                // Log the refresh for debugging
+                console.log('✅ UI refreshed after personnel edit');
+                window.advancedAudit?.logUI?.('INFO', 'Personnel table refreshed after edit', {
+                    totalPersonnel: window.app.personnelData.length,
+                    filteredPersonnel: window.app.filteredData.length,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        } catch (error) {
+            logError('Post-edit refresh failed', error);
+            // Fallback: basic page refresh mechanism
+            setTimeout(() => {
+                if (window.app && window.app.applyFilters) {
+                    window.app.applyFilters();
+                }
+            }, 100);
+        }
     }
 
     /* ---------- Bulk Operations ---------- */

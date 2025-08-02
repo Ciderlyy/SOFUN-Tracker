@@ -256,7 +256,8 @@ class SofunDataProcessor {
                 data: personnel,
                 recordCount: personnel.length,
                 errors: errors,
-                warnings: warnings
+                warnings: warnings,
+                originalWorkbook: workbook // Include original workbook for modified exports
             };
         } catch (error) {
             logError('Excel processing failed', error);
@@ -1125,7 +1126,248 @@ class SofunDataProcessor {
     /* ---------- Excel Export ---------- */
 
     /**
-     * Download enhanced Excel report
+     * Download modified original Excel file (preserves original structure)
+     * @param {Array} personnelData - Updated personnel data
+     * @param {Object} originalWorkbook - Original Excel workbook
+     * @param {string} originalFileName - Original filename
+     */
+    downloadModifiedExcel(personnelData, originalWorkbook, originalFileName) {
+        try {
+            console.log('Generating modified Excel export (preserving original structure)...');
+            
+            if (!originalWorkbook) {
+                throw new Error('No original workbook available. Please import an Excel file first.');
+            }
+            
+            // Clone the original workbook to avoid modifying the stored copy
+            const wb = XLSX.utils.book_new();
+            Object.keys(originalWorkbook.Sheets).forEach(sheetName => {
+                const originalSheet = originalWorkbook.Sheets[sheetName];
+                const clonedSheet = XLSX.utils.aoa_to_sheet(XLSX.utils.sheet_to_json(originalSheet, { header: 1 }));
+                wb.SheetNames.push(sheetName);
+                wb.Sheets[sheetName] = clonedSheet;
+            });
+            
+            // Update the 'All in one view' sheet with current data
+            this.updateAllInOneViewSheet(wb, personnelData);
+            
+            // Update individual assessment sheets with current data
+            this.updateAssessmentSheets(wb, personnelData);
+            
+            // Generate filename with "Modified" prefix and timestamp
+            const timestamp = new Date().toISOString().split('T')[0];
+            const fileBaseName = originalFileName.replace(/\.[^/.]+$/, ""); // Remove extension
+            const filename = `Modified_${fileBaseName}_${timestamp}.xlsx`;
+            
+            // Download the modified file
+            XLSX.writeFile(wb, filename);
+            
+            console.log(`✅ Modified Excel export completed: ${filename}`);
+            storage.addAuditEntry(`Downloaded modified Excel file: ${filename}`);
+            
+            return filename;
+            
+        } catch (error) {
+            logError('Modified Excel export failed', error);
+            showErrorMessage('Failed to generate modified Excel file: ' + error.message);
+            return null;
+        }
+    }
+
+    /**
+     * Update the 'All in one view' sheet with current personnel data
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Current personnel data
+     */
+    updateAllInOneViewSheet(wb, personnelData) {
+        const sheetName = wb.SheetNames.find(name => 
+            name.trim().toLowerCase() === 'all in one view'
+        );
+        
+        if (!sheetName) {
+            console.warn('All in one view sheet not found for update');
+            return;
+        }
+        
+        const sheet = wb.Sheets[sheetName];
+        const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        
+        // Find header row (should contain 'Name' or similar)
+        const headerRowIndex = data.findIndex(row => 
+            row.some(cell => cell && cell.toString().toLowerCase().includes('name'))
+        );
+        
+        if (headerRowIndex === -1) {
+            console.warn('Could not find header row in All in one view sheet');
+            return;
+        }
+        
+        const headers = data[headerRowIndex];
+        
+        // Map column indices
+        const columnMap = {};
+        headers.forEach((header, index) => {
+            if (header) {
+                const headerStr = header.toString().toLowerCase().trim();
+                if (headerStr.includes('name')) columnMap.name = index;
+                if (headerStr.includes('platoon')) columnMap.platoon = index;
+                if (headerStr.includes('pes')) columnMap.pes = index;
+                if (headerStr.includes('ord')) columnMap.ordDate = index;
+                if (headerStr.includes('medical')) columnMap.medicalStatus = index;
+            }
+        });
+        
+        // Update data rows with current personnel data
+        const newData = [...data];
+        
+        // Clear existing data rows (keep headers)
+        newData.splice(headerRowIndex + 1);
+        
+        // Add updated personnel data
+        personnelData.forEach(person => {
+            const row = new Array(headers.length).fill('');
+            if (columnMap.name !== undefined) row[columnMap.name] = person.name || '';
+            if (columnMap.platoon !== undefined) row[columnMap.platoon] = person.platoon || '';
+            if (columnMap.pes !== undefined) row[columnMap.pes] = person.pes || '';
+            if (columnMap.ordDate !== undefined) row[columnMap.ordDate] = person.ordDate || '';
+            if (columnMap.medicalStatus !== undefined) row[columnMap.medicalStatus] = person.medicalStatus || 'Fit';
+            newData.push(row);
+        });
+        
+        // Replace the sheet with updated data
+        wb.Sheets[sheetName] = XLSX.utils.aoa_to_sheet(newData);
+        console.log(`Updated 'All in one view' sheet with ${personnelData.length} personnel records`);
+    }
+
+    /**
+     * Update individual assessment sheets (IPPT, VOC, RANGE) with current data
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Current personnel data
+     */
+    updateAssessmentSheets(wb, personnelData) {
+        const assessmentSheets = ['ippt', 'voc', 'range'];
+        
+        assessmentSheets.forEach(assessmentType => {
+            const sheetName = wb.SheetNames.find(name => 
+                name.trim().toLowerCase() === assessmentType
+            );
+            
+            if (sheetName) {
+                this.updateAssessmentSheet(wb, sheetName, assessmentType, personnelData);
+            }
+        });
+    }
+
+    /**
+     * Update a specific assessment sheet
+     * @param {Object} wb - Workbook object
+     * @param {string} sheetName - Sheet name
+     * @param {string} assessmentType - Type of assessment (ippt, voc, range)
+     * @param {Array} personnelData - Current personnel data
+     */
+    updateAssessmentSheet(wb, sheetName, assessmentType, personnelData) {
+        try {
+            const sheet = wb.Sheets[sheetName];
+            const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            
+            // Find header row
+            const headerRowIndex = data.findIndex(row => 
+                row.some(cell => cell && cell.toString().toLowerCase().includes('name'))
+            );
+            
+            if (headerRowIndex === -1) {
+                console.warn(`Could not find header row in ${sheetName} sheet`);
+                return;
+            }
+            
+            const headers = data[headerRowIndex];
+            const nameColumnIndex = headers.findIndex(header => 
+                header && header.toString().toLowerCase().includes('name')
+            );
+            
+            if (nameColumnIndex === -1) {
+                console.warn(`Could not find name column in ${sheetName} sheet`);
+                return;
+            }
+            
+            // Update existing rows with current data
+            for (let rowIndex = headerRowIndex + 1; rowIndex < data.length; rowIndex++) {
+                const row = data[rowIndex];
+                if (!row || !row[nameColumnIndex]) continue;
+                
+                const personName = row[nameColumnIndex].toString().trim();
+                const person = personnelData.find(p => p.name === personName);
+                
+                if (person) {
+                    // Update assessment data based on type
+                    this.updateAssessmentRowData(row, headers, person, assessmentType);
+                }
+            }
+            
+            // Replace the sheet with updated data
+            wb.Sheets[sheetName] = XLSX.utils.aoa_to_sheet(data);
+            console.log(`Updated ${sheetName} sheet`);
+            
+        } catch (error) {
+            console.warn(`Failed to update ${sheetName} sheet:`, error);
+        }
+    }
+
+    /**
+     * Update assessment row data based on assessment type
+     * @param {Array} row - Row data
+     * @param {Array} headers - Header row
+     * @param {Object} person - Personnel data
+     * @param {string} assessmentType - Type of assessment
+     */
+    updateAssessmentRowData(row, headers, person, assessmentType) {
+        headers.forEach((header, columnIndex) => {
+            if (!header) return;
+            
+            const headerStr = header.toString().toLowerCase().trim();
+            
+            // Update based on assessment type and header content
+            if (assessmentType === 'ippt') {
+                if (headerStr.includes('y1') && headerStr.includes('result')) {
+                    row[columnIndex] = person.y1?.ippt || '';
+                } else if (headerStr.includes('y2') && headerStr.includes('result')) {
+                    row[columnIndex] = person.y2?.ippt || '';
+                } else if (headerStr.includes('y1') && headerStr.includes('date')) {
+                    row[columnIndex] = person.y1?.ipptDate || '';
+                } else if (headerStr.includes('y2') && headerStr.includes('date')) {
+                    row[columnIndex] = person.y2?.ipptDate || '';
+                }
+            } else if (assessmentType === 'voc') {
+                if (headerStr.includes('y1') && headerStr.includes('result')) {
+                    row[columnIndex] = person.y1?.voc || '';
+                } else if (headerStr.includes('y2') && headerStr.includes('result')) {
+                    row[columnIndex] = person.y2?.voc || '';
+                } else if (headerStr.includes('y1') && headerStr.includes('date')) {
+                    row[columnIndex] = person.y1?.vocDate || '';
+                } else if (headerStr.includes('y2') && headerStr.includes('date')) {
+                    row[columnIndex] = person.y2?.vocDate || '';
+                }
+            } else if (assessmentType === 'range') {
+                if (headerStr.includes('y2') && headerStr.includes('result')) {
+                    row[columnIndex] = person.y2?.range || '';
+                } else if (headerStr.includes('y2') && headerStr.includes('date')) {
+                    row[columnIndex] = person.y2?.rangeDate || '';
+                }
+            }
+            
+            // Update common fields
+            if (headerStr.includes('platoon')) {
+                row[columnIndex] = person.platoon || '';
+            } else if (headerStr.includes('pes')) {
+                row[columnIndex] = person.pes || '';
+            } else if (headerStr.includes('medical')) {
+                row[columnIndex] = person.medicalStatus || 'Fit';
+            }
+        });
+    }
+
+    /**
+     * Download enhanced Excel report (creates new format)
      * @param {Array} personnelData - Personnel data to export
      * @param {Array} auditLog - Audit log data
      */
@@ -1339,6 +1581,16 @@ function processExcelFile(file) {
  */
 function downloadImprovedExcel(personnelData, auditLog) {
     dataProcessor.downloadExcel(personnelData, auditLog);
+}
+
+/**
+ * Global function to download modified Excel (preserves original structure)
+ * @param {Array} personnelData - Personnel data
+ * @param {Object} originalWorkbook - Original workbook
+ * @param {string} originalFileName - Original filename
+ */
+function downloadModifiedExcel(personnelData, originalWorkbook, originalFileName) {
+    return dataProcessor.downloadModifiedExcel(personnelData, originalWorkbook, originalFileName);
 }
 
 /**

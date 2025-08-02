@@ -313,6 +313,25 @@ production/
 
 ---
 
+## Change Log
+
+### Latest Updates
+- **Preserve Original Excel Structure**: Added ability to export modified versions of the original Excel file while preserving all formatting, formulas, and structure. Users can choose between modified original export or new format export.
+- **Enhanced File Upload System**: Added clear "Process File" button for Excel imports with improved alignment and user control. Users now see real-time file status updates (ready, processing, success, error) with file validation and size display.
+- **Enhanced Personnel Editing**: Added change confirmation dialog that shows exactly what fields are being modified before saving. Users now see a detailed comparison of original vs. updated values for all changed fields including basic info and assessment data.
+- **Improved Post-Edit Refresh**: Implemented immediate table refresh after personnel edits to ensure the list updates without requiring additional filter actions.
+
+### Previous Updates
+- Added serial numbers to personnel list (e.g., "1. Bredon")
+- Added total personnel count to SOFUN dashboard
+- Removed sample data for security reasons
+- Implemented decorative animated background with Canvas 2D graphics
+- Enhanced dashboard with Y1 assessment charts and flexible chart selection
+- Added advanced technical audit logging system for developers
+- Various UI/UX improvements and bug fixes
+
+---
+
 **Last Updated**: [Current Date]
 **Version**: 2.0
 **Maintainer**: [Your Name/Team] 
