@@ -218,7 +218,8 @@ class PersonnelManager {
             
             tbody.innerHTML = data.map((person, index) => {
                 const globalIndex = filteredData.indexOf(person);
-                return this.generateTableRow(person, globalIndex, category);
+                const serialNumber = index + 1; // Start from 1
+                return this.generateTableRow(person, globalIndex, category, serialNumber);
             }).join('');
             
         } catch (error) {
@@ -233,7 +234,7 @@ class PersonnelManager {
      * @param {string} category - Table category
      * @returns {string} HTML row string
      */
-    generateTableRow(person, globalIndex, category) {
+    generateTableRow(person, globalIndex, category, serialNumber) {
         const isChecked = this.selectedPersonnel.has(person.name);
         const checkboxDisplay = this.bulkSelectMode ? 'inline' : 'none';
         const status = getPersonStatus(person);
@@ -242,6 +243,7 @@ class PersonnelManager {
             return `
                 <tr>
                     <td><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
+                    <td class="serial-number">${serialNumber}.</td>
                     <td>${escapeHtml(person.name)}</td>
                     <td>${escapeHtml(person.platoon || '-')}</td>
                     <td>${formatDate(person.ordDate)}</td>
@@ -261,6 +263,7 @@ class PersonnelManager {
             return `
                 <tr>
                     <td><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
+                    <td class="serial-number">${serialNumber}.</td>
                     <td>${escapeHtml(person.name)}</td>
                     <td>${escapeHtml(person.unit || person.platoon || '-')}</td>
                     <td>${escapeHtml(person.rank || '-')}</td>

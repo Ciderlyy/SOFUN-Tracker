@@ -263,6 +263,8 @@ production/
 - **NEW**: Bulk operations with audit trail
 - **NEW**: Advanced search and filtering
 - **NEW**: Print-optimized reporting
+- **NEW**: Serial numbers for personnel lists
+- **NEW**: Total personnel count on dashboard
 - **IMPROVED**: Excel processing reliability
 - **IMPROVED**: Mobile responsiveness
 - **FIXED**: Status calculation for Regular personnel

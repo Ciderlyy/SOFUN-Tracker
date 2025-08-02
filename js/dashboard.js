@@ -383,6 +383,7 @@ class SofunDashboard {
         const regularPersonnel = activePersonnel.filter(p => p.category === 'Regular');
         
         // Update statistics cards
+        this.updateStatCard('totalPersonnel', activePersonnel.length);
         this.updateStatCard('totalNSF', nsfPersonnel.length);
         this.updateStatCard('totalRegulars', regularPersonnel.length);
         this.updateStatCard('y2IpptGold', activePersonnel.filter(p => p.y2?.ippt === 'Gold').length);

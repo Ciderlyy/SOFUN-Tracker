@@ -3,6 +3,15 @@
    UI components: buttons, forms, modals, badges, alerts
    ================================================================= */
 
+/* ---------- Serial Numbers ---------- */
+.serial-number {
+    font-weight: 600;
+    color: #3498db;
+    text-align: center;
+    min-width: 40px;
+    font-size: 0.9em;
+}
+
 /* ---------- Buttons ---------- */
 .btn {
     padding: 12px 25px;
