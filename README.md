@@ -6,7 +6,7 @@
 
 **Enhanced NSF & Regular Personnel Assessment Tracking System**
 
-Access the website here  [(https://ciderlyy.github.io/SOFUN-Tracker/)]
+Access the website here (https://ciderlyy.github.io/SOFUN-Tracker/)
 
 A comprehensive web-based solution for military unit commanders to track and manage personnel assessments, designed specifically for Singapore Armed Forces (SAF) units managing both National Service (NSF) and Regular personnel.
 
