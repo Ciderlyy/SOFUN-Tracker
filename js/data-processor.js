@@ -1373,12 +1373,18 @@ class SofunDataProcessor {
      */
     downloadExcel(personnelData, auditLog = []) {
         try {
-            console.log('Generating Excel export...');
+            console.log('Generating comprehensive Excel export with dashboard data...');
             
             const wb = XLSX.utils.book_new();
             
-            // Create dashboard summary sheet
-            this.createDashboardSheet(wb, personnelData);
+            // Create comprehensive dashboard sheets
+            this.createMainDashboardSheet(wb, personnelData);
+            this.createStatisticsSheet(wb, personnelData);
+            this.createPlatoonAnalysisSheet(wb, personnelData);
+            this.createAssessmentProgressSheet(wb, personnelData);
+            this.createOverdueAssessmentsSheet(wb, personnelData);
+            this.createCompletionRatesSheet(wb, personnelData);
+            this.createTrendAnalysisSheet(wb, personnelData);
             
             // Create detailed personnel sheets
             this.createPersonnelSheets(wb, personnelData);
@@ -1387,11 +1393,11 @@ class SofunDataProcessor {
             this.createAuditSheet(wb, auditLog);
             
             // Download the file
-            const filename = `SOFUN_Tracker_v${APP_CONFIG.version}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            const filename = `SOFUN_Tracker_Complete_Dashboard_v${APP_CONFIG.version}_${new Date().toISOString().split('T')[0]}.xlsx`;
             XLSX.writeFile(wb, filename);
             
-            console.log(`✅ Excel export completed: ${filename}`);
-            storage.addAuditEntry(`Downloaded Excel report: ${filename}`);
+            console.log(`✅ Comprehensive Excel export completed: ${filename}`);
+            storage.addAuditEntry(`Downloaded comprehensive Excel report with dashboard data: ${filename}`);
             
         } catch (error) {
             logError('Excel export failed', error);
@@ -1400,24 +1406,541 @@ class SofunDataProcessor {
     }
 
     /**
-     * Create dashboard summary sheet
+     * Create main dashboard summary sheet
      * @param {Object} wb - Workbook object
      * @param {Array} personnelData - Personnel data
      */
-    createDashboardSheet(wb, personnelData) {
+    createMainDashboardSheet(wb, personnelData) {
         const activePersonnel = personnelData.filter(p => !p.isORD);
         
         const dashboardData = [
-            ['SOFUN Tracker Dashboard Summary v' + APP_CONFIG.version, '', '', '', '', '', '', ''],
+            ['SOFUN Tracker - Main Dashboard Summary v' + APP_CONFIG.version, '', '', '', '', '', '', ''],
             ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
-            ['Enhanced with search, edit, and audit features', '', '', '', '', '', '', ''],
+            ['Enhanced with comprehensive dashboard data and analytics', '', '', '', '', '', '', ''],
             ['', '', '', '', '', '', '', ''],
             ['Category', 'Total', 'Y2 IPPT Gold', 'Y2 IPPT Silver', 'Y2 VOC Pass', 'Y2 Range Qualified', 'Y1 Complete', 'Y2 Complete'],
             ...this.generateCategorySummary(activePersonnel)
         ];
         
         const dashboardWS = XLSX.utils.aoa_to_sheet(dashboardData);
-        XLSX.utils.book_append_sheet(wb, dashboardWS, 'Dashboard');
+        XLSX.utils.book_append_sheet(wb, dashboardWS, 'Main_Dashboard');
+    }
+
+    /**
+     * Create comprehensive statistics sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createStatisticsSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        const nsfPersonnel = activePersonnel.filter(p => p.category === 'NSF');
+        const regularPersonnel = activePersonnel.filter(p => p.category === 'Regular');
+        
+        const statsData = [
+            ['SOFUN Tracker - Comprehensive Statistics', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Overall Statistics', '', '', '', '', '', '', ''],
+            ['Total Active Personnel', activePersonnel.length, '', '', '', '', '', ''],
+            ['NSF Personnel', nsfPersonnel.length, '', '', '', '', '', ''],
+            ['Regular Personnel', regularPersonnel.length, '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Y2 Assessment Statistics', '', '', '', '', '', '', ''],
+            ['Y2 IPPT Gold', activePersonnel.filter(p => p.y2?.ippt === 'Gold').length, '', '', '', '', '', ''],
+            ['Y2 IPPT Silver', activePersonnel.filter(p => p.y2?.ippt === 'Silver').length, '', '', '', '', '', ''],
+            ['Y2 IPPT Pass', activePersonnel.filter(p => p.y2?.ippt === 'Pass').length, '', '', '', '', '', ''],
+            ['Y2 IPPT Fail', activePersonnel.filter(p => p.y2?.ippt === 'Fail').length, '', '', '', '', '', ''],
+            ['Y2 IPPT Pending', activePersonnel.filter(p => !p.y2?.ippt).length, '', '', '', '', '', ''],
+            ['Y2 VOC Pass', activePersonnel.filter(p => p.y2?.voc === 'Pass').length, '', '', '', '', '', ''],
+            ['Y2 VOC Fail', activePersonnel.filter(p => p.y2?.voc === 'Fail').length, '', '', '', '', '', ''],
+            ['Y2 VOC Pending', activePersonnel.filter(p => !p.y2?.voc).length, '', '', '', '', '', ''],
+            ['Y2 Range Marksman', activePersonnel.filter(p => p.y2?.range === 'Marksman').length, '', '', '', '', '', ''],
+            ['Y2 Range Sharpshooter', activePersonnel.filter(p => p.y2?.range === 'Sharpshooter').length, '', '', '', '', '', ''],
+            ['Y2 Range Pass', activePersonnel.filter(p => p.y2?.range === 'Pass').length, '', '', '', '', '', ''],
+            ['Y2 Range Fail', activePersonnel.filter(p => p.y2?.range === 'Fail').length, '', '', '', '', '', ''],
+            ['Y2 Range Pending', activePersonnel.filter(p => !p.y2?.range).length, '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Y1 Assessment Statistics', '', '', '', '', '', '', ''],
+            ['Y1 IPPT Gold', activePersonnel.filter(p => p.y1?.ippt === 'Gold').length, '', '', '', '', '', ''],
+            ['Y1 IPPT Silver', activePersonnel.filter(p => p.y1?.ippt === 'Silver').length, '', '', '', '', '', ''],
+            ['Y1 IPPT Pass', activePersonnel.filter(p => p.y1?.ippt === 'Pass').length, '', '', '', '', '', ''],
+            ['Y1 IPPT Fail', activePersonnel.filter(p => p.y1?.ippt === 'Fail').length, '', '', '', '', '', ''],
+            ['Y1 IPPT Pending', activePersonnel.filter(p => !p.y1?.ippt).length, '', '', '', '', '', ''],
+            ['Y1 VOC Pass', activePersonnel.filter(p => p.y1?.voc === 'Pass').length, '', '', '', '', '', ''],
+            ['Y1 VOC Fail', activePersonnel.filter(p => p.y1?.voc === 'Fail').length, '', '', '', '', '', ''],
+            ['Y1 VOC Pending', activePersonnel.filter(p => !p.y1?.voc).length, '', '', '', '', '', ''],
+            ['Y1 ATP Pass', activePersonnel.filter(p => p.y1?.atp === 'Pass').length, '', '', '', '', '', ''],
+            ['Y1 ATP Fail', activePersonnel.filter(p => p.y1?.atp === 'Fail').length, '', '', '', '', '', ''],
+            ['Y1 ATP Pending', activePersonnel.filter(p => !p.y1?.atp).length, '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Completion Statistics', '', '', '', '', '', '', ''],
+            ['Y1 Complete', activePersonnel.filter(p => p.y1?.ippt && p.y1?.voc && p.y1?.atp).length, '', '', '', '', '', ''],
+            ['Y2 Complete', activePersonnel.filter(p => p.y2?.ippt && p.y2?.voc && p.y2?.range).length, '', '', '', '', '', ''],
+            ['Overall Complete', activePersonnel.filter(p => 
+                (p.y1?.ippt && p.y1?.voc && p.y1?.atp) && (p.y2?.ippt && p.y2?.voc && p.y2?.range)
+            ).length, '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Medical Status Statistics', '', '', '', '', '', '', ''],
+            ['Fit', activePersonnel.filter(p => p.medicalStatus === 'Fit').length, '', '', '', '', '', ''],
+            ['Light Duty', activePersonnel.filter(p => p.medicalStatus === 'Light Duty').length, '', '', '', '', '', ''],
+            ['Excused IPPT', activePersonnel.filter(p => p.medicalStatus === 'Excused IPPT').length, '', '', '', '', '', ''],
+            ['Medical Board', activePersonnel.filter(p => p.medicalStatus === 'Medical Board').length, '', '', '', '', '', ''],
+            ['Not Specified', activePersonnel.filter(p => !p.medicalStatus).length, '', '', '', '', '', '']
+        ];
+        
+        const statsWS = XLSX.utils.aoa_to_sheet(statsData);
+        XLSX.utils.book_append_sheet(wb, statsWS, 'Statistics');
+    }
+
+    /**
+     * Create platoon analysis sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createPlatoonAnalysisSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        const platoons = [...new Set(activePersonnel.map(p => p.platoon).filter(Boolean))];
+        
+        const platoonData = [
+            ['SOFUN Tracker - Platoon Analysis', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Platoon', 'Total Personnel', 'NSF', 'Regular', 'Y1 Complete', 'Y2 Complete', 'Overall Complete', 'Medical Issues'],
+            ...platoons.map(platoon => {
+                const platoonPersonnel = activePersonnel.filter(p => p.platoon === platoon);
+                const nsfCount = platoonPersonnel.filter(p => p.category === 'NSF').length;
+                const regularCount = platoonPersonnel.filter(p => p.category === 'Regular').length;
+                const y1Complete = platoonPersonnel.filter(p => p.y1?.ippt && p.y1?.voc && p.y1?.atp).length;
+                const y2Complete = platoonPersonnel.filter(p => p.y2?.ippt && p.y2?.voc && p.y2?.range).length;
+                const overallComplete = platoonPersonnel.filter(p => 
+                    (p.y1?.ippt && p.y1?.voc && p.y1?.atp) && (p.y2?.ippt && p.y2?.voc && p.y2?.range)
+                ).length;
+                const medicalIssues = platoonPersonnel.filter(p => 
+                    p.medicalStatus && p.medicalStatus !== 'Fit'
+                ).length;
+                
+                return [
+                    platoon,
+                    platoonPersonnel.length,
+                    nsfCount,
+                    regularCount,
+                    y1Complete,
+                    y2Complete,
+                    overallComplete,
+                    medicalIssues
+                ];
+            })
+        ];
+        
+        const platoonWS = XLSX.utils.aoa_to_sheet(platoonData);
+        XLSX.utils.book_append_sheet(wb, platoonWS, 'Platoon_Analysis');
+    }
+
+    /**
+     * Create assessment progress sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createAssessmentProgressSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        
+        const progressData = [
+            ['SOFUN Tracker - Assessment Progress Analysis', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Assessment Type', 'Total Personnel', 'Completed', 'Pending', 'Pass Rate', 'Gold/Silver Rate', 'Average Grade', 'Notes'],
+            ['Y2 IPPT', activePersonnel.length, 
+             activePersonnel.filter(p => p.y2?.ippt).length,
+             activePersonnel.filter(p => !p.y2?.ippt).length,
+             this.calculatePassRate(activePersonnel, 'y2', 'ippt') + '%',
+             this.calculateGoldSilverRate(activePersonnel, 'y2', 'ippt') + '%',
+             this.calculateAverageGrade(activePersonnel, 'y2', 'ippt'),
+             'Fitness assessment'
+            ],
+            ['Y2 VOC', activePersonnel.length,
+             activePersonnel.filter(p => p.y2?.voc).length,
+             activePersonnel.filter(p => !p.y2?.voc).length,
+             this.calculatePassRate(activePersonnel, 'y2', 'voc') + '%',
+             'N/A',
+             this.calculateAverageGrade(activePersonnel, 'y2', 'voc'),
+             'Vocational assessment'
+            ],
+            ['Y2 Range', activePersonnel.length,
+             activePersonnel.filter(p => p.y2?.range).length,
+             activePersonnel.filter(p => !p.y2?.range).length,
+             this.calculatePassRate(activePersonnel, 'y2', 'range') + '%',
+             this.calculateMarksmanRate(activePersonnel, 'y2', 'range') + '%',
+             this.calculateAverageGrade(activePersonnel, 'y2', 'range'),
+             'Marksmanship assessment'
+            ],
+            ['Y1 IPPT', activePersonnel.length,
+             activePersonnel.filter(p => p.y1?.ippt).length,
+             activePersonnel.filter(p => !p.y1?.ippt).length,
+             this.calculatePassRate(activePersonnel, 'y1', 'ippt') + '%',
+             this.calculateGoldSilverRate(activePersonnel, 'y1', 'ippt') + '%',
+             this.calculateAverageGrade(activePersonnel, 'y1', 'ippt'),
+             'Initial fitness assessment'
+            ],
+            ['Y1 VOC', activePersonnel.length,
+             activePersonnel.filter(p => p.y1?.voc).length,
+             activePersonnel.filter(p => !p.y1?.voc).length,
+             this.calculatePassRate(activePersonnel, 'y1', 'voc') + '%',
+             'N/A',
+             this.calculateAverageGrade(activePersonnel, 'y1', 'voc'),
+             'Initial vocational assessment'
+            ],
+            ['Y1 ATP', activePersonnel.length,
+             activePersonnel.filter(p => p.y1?.atp).length,
+             activePersonnel.filter(p => !p.y1?.atp).length,
+             this.calculatePassRate(activePersonnel, 'y1', 'atp') + '%',
+             'N/A',
+             this.calculateAverageGrade(activePersonnel, 'y1', 'atp'),
+             'Advanced training assessment'
+            ]
+        ];
+        
+        const progressWS = XLSX.utils.aoa_to_sheet(progressData);
+        XLSX.utils.book_append_sheet(wb, progressWS, 'Assessment_Progress');
+    }
+
+    /**
+     * Create overdue assessments sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createOverdueAssessmentsSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        
+        const overdueData = [
+            ['SOFUN Tracker - Overdue Assessments Report', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Name', 'Platoon', 'Category', 'Assessment Type', 'Last Test Date', 'Days Overdue', 'Status', 'Priority']
+        ];
+        
+        // Check for overdue assessments
+        const overdueAssessments = [];
+        
+        activePersonnel.forEach(person => {
+            // Check Y2 assessments
+            if (!person.y2?.ippt) {
+                overdueAssessments.push([
+                    person.name,
+                    person.platoon || '',
+                    person.category,
+                    'Y2 IPPT',
+                    person.y2?.ipptDate || 'Not taken',
+                    'Overdue',
+                    'Pending',
+                    'High'
+                ]);
+            }
+            
+            if (!person.y2?.voc) {
+                overdueAssessments.push([
+                    person.name,
+                    person.platoon || '',
+                    person.category,
+                    'Y2 VOC',
+                    person.y2?.vocDate || 'Not taken',
+                    'Overdue',
+                    'Pending',
+                    'High'
+                ]);
+            }
+            
+            if (!person.y2?.range) {
+                overdueAssessments.push([
+                    person.name,
+                    person.platoon || '',
+                    person.category,
+                    'Y2 Range',
+                    person.y2?.rangeDate || 'Not taken',
+                    'Overdue',
+                    'Pending',
+                    'High'
+                ]);
+            }
+            
+            // Check Y1 assessments for NSF
+            if (person.category === 'NSF') {
+                if (!person.y1?.ippt) {
+                    overdueAssessments.push([
+                        person.name,
+                        person.platoon || '',
+                        person.category,
+                        'Y1 IPPT',
+                        person.y1?.ipptDate || 'Not taken',
+                        'Overdue',
+                        'Pending',
+                        'Medium'
+                    ]);
+                }
+                
+                if (!person.y1?.voc) {
+                    overdueAssessments.push([
+                        person.name,
+                        person.platoon || '',
+                        person.category,
+                        'Y1 VOC',
+                        person.y1?.vocDate || 'Not taken',
+                        'Overdue',
+                        'Pending',
+                        'Medium'
+                    ]);
+                }
+                
+                if (!person.y1?.atp) {
+                    overdueAssessments.push([
+                        person.name,
+                        person.platoon || '',
+                        person.category,
+                        'Y1 ATP',
+                        person.y1?.atpDate || 'Not taken',
+                        'Overdue',
+                        'Pending',
+                        'Medium'
+                    ]);
+                }
+            }
+        });
+        
+        overdueData.push(...overdueAssessments);
+        
+        const overdueWS = XLSX.utils.aoa_to_sheet(overdueData);
+        XLSX.utils.book_append_sheet(wb, overdueWS, 'Overdue_Assessments');
+    }
+
+    /**
+     * Create completion rates sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createCompletionRatesSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        
+        const completionData = [
+            ['SOFUN Tracker - Completion Rates Analysis', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Category', 'Total Personnel', 'Y1 Complete', 'Y2 Complete', 'Overall Complete', 'Y1 Rate', 'Y2 Rate', 'Overall Rate'],
+            ...['NSF', 'Regular'].map(category => {
+                const catPersonnel = activePersonnel.filter(p => p.category === category);
+                const y1Complete = catPersonnel.filter(p => p.y1?.ippt && p.y1?.voc && p.y1?.atp).length;
+                const y2Complete = catPersonnel.filter(p => p.y2?.ippt && p.y2?.voc && p.y2?.range).length;
+                const overallComplete = catPersonnel.filter(p => 
+                    (p.y1?.ippt && p.y1?.voc && p.y1?.atp) && (p.y2?.ippt && p.y2?.voc && p.y2?.range)
+                ).length;
+                
+                return [
+                    category,
+                    catPersonnel.length,
+                    y1Complete,
+                    y2Complete,
+                    overallComplete,
+                    catPersonnel.length > 0 ? ((y1Complete / catPersonnel.length) * 100).toFixed(1) + '%' : '0%',
+                    catPersonnel.length > 0 ? ((y2Complete / catPersonnel.length) * 100).toFixed(1) + '%' : '0%',
+                    catPersonnel.length > 0 ? ((overallComplete / catPersonnel.length) * 100).toFixed(1) + '%' : '0%'
+                ];
+            }),
+            ['', '', '', '', '', '', '', ''],
+            ['Overall Unit', activePersonnel.length,
+             activePersonnel.filter(p => p.y1?.ippt && p.y1?.voc && p.y1?.atp).length,
+             activePersonnel.filter(p => p.y2?.ippt && p.y2?.voc && p.y2?.range).length,
+             activePersonnel.filter(p => 
+                 (p.y1?.ippt && p.y1?.voc && p.y1?.atp) && (p.y2?.ippt && p.y2?.voc && p.y2?.range)
+             ).length,
+             activePersonnel.length > 0 ? ((activePersonnel.filter(p => p.y1?.ippt && p.y1?.voc && p.y1?.atp).length / activePersonnel.length) * 100).toFixed(1) + '%' : '0%',
+             activePersonnel.length > 0 ? ((activePersonnel.filter(p => p.y2?.ippt && p.y2?.voc && p.y2?.range).length / activePersonnel.length) * 100).toFixed(1) + '%' : '0%',
+             activePersonnel.length > 0 ? ((activePersonnel.filter(p => 
+                 (p.y1?.ippt && p.y1?.voc && p.y1?.atp) && (p.y2?.ippt && p.y2?.voc && p.y2?.range)
+             ).length / activePersonnel.length) * 100).toFixed(1) + '%' : '0%'
+            ]
+        ];
+        
+        const completionWS = XLSX.utils.aoa_to_sheet(completionData);
+        XLSX.utils.book_append_sheet(wb, completionWS, 'Completion_Rates');
+    }
+
+    /**
+     * Create trend analysis sheet
+     * @param {Object} wb - Workbook object
+     * @param {Array} personnelData - Personnel data
+     */
+    createTrendAnalysisSheet(wb, personnelData) {
+        const activePersonnel = personnelData.filter(p => !p.isORD);
+        
+        const trendData = [
+            ['SOFUN Tracker - Trend Analysis', '', '', '', '', '', '', ''],
+            ['Generated on:', new Date().toLocaleDateString(), '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['Assessment Type', 'Gold/Marksman', 'Silver/Sharpshooter', 'Pass', 'Fail', 'Pending', 'Total', 'Success Rate'],
+            ['Y2 IPPT', 
+             activePersonnel.filter(p => p.y2?.ippt === 'Gold').length,
+             activePersonnel.filter(p => p.y2?.ippt === 'Silver').length,
+             activePersonnel.filter(p => p.y2?.ippt === 'Pass').length,
+             activePersonnel.filter(p => p.y2?.ippt === 'Fail').length,
+             activePersonnel.filter(p => !p.y2?.ippt).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y2', 'ippt') + '%'
+            ],
+            ['Y2 VOC',
+             'N/A',
+             'N/A',
+             activePersonnel.filter(p => p.y2?.voc === 'Pass').length,
+             activePersonnel.filter(p => p.y2?.voc === 'Fail').length,
+             activePersonnel.filter(p => !p.y2?.voc).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y2', 'voc') + '%'
+            ],
+            ['Y2 Range',
+             activePersonnel.filter(p => p.y2?.range === 'Marksman').length,
+             activePersonnel.filter(p => p.y2?.range === 'Sharpshooter').length,
+             activePersonnel.filter(p => p.y2?.range === 'Pass').length,
+             activePersonnel.filter(p => p.y2?.range === 'Fail').length,
+             activePersonnel.filter(p => !p.y2?.range).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y2', 'range') + '%'
+            ],
+            ['Y1 IPPT',
+             activePersonnel.filter(p => p.y1?.ippt === 'Gold').length,
+             activePersonnel.filter(p => p.y1?.ippt === 'Silver').length,
+             activePersonnel.filter(p => p.y1?.ippt === 'Pass').length,
+             activePersonnel.filter(p => p.y1?.ippt === 'Fail').length,
+             activePersonnel.filter(p => !p.y1?.ippt).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y1', 'ippt') + '%'
+            ],
+            ['Y1 VOC',
+             'N/A',
+             'N/A',
+             activePersonnel.filter(p => p.y1?.voc === 'Pass').length,
+             activePersonnel.filter(p => p.y1?.voc === 'Fail').length,
+             activePersonnel.filter(p => !p.y1?.voc).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y1', 'voc') + '%'
+            ],
+            ['Y1 ATP',
+             'N/A',
+             'N/A',
+             activePersonnel.filter(p => p.y1?.atp === 'Pass').length,
+             activePersonnel.filter(p => p.y1?.atp === 'Fail').length,
+             activePersonnel.filter(p => !p.y1?.atp).length,
+             activePersonnel.length,
+             this.calculateSuccessRate(activePersonnel, 'y1', 'atp') + '%'
+            ]
+        ];
+        
+        const trendWS = XLSX.utils.aoa_to_sheet(trendData);
+        XLSX.utils.book_append_sheet(wb, trendWS, 'Trend_Analysis');
+    }
+
+    /**
+     * Calculate pass rate for an assessment
+     * @param {Array} personnel - Personnel data
+     * @param {string} phase - Assessment phase (y1/y2)
+     * @param {string} type - Assessment type (ippt/voc/range/atp)
+     * @returns {string} Pass rate percentage
+     */
+    calculatePassRate(personnel, phase, type) {
+        const completed = personnel.filter(p => p[phase]?.[type]);
+        if (completed.length === 0) return '0';
+        
+        const passed = completed.filter(p => {
+            const result = p[phase]?.[type];
+            return result === 'Pass' || result === 'Gold' || result === 'Silver' || 
+                   result === 'Marksman' || result === 'Sharpshooter';
+        }).length;
+        
+        return ((passed / completed.length) * 100).toFixed(1);
+    }
+
+    /**
+     * Calculate gold/silver rate for IPPT
+     * @param {Array} personnel - Personnel data
+     * @param {string} phase - Assessment phase (y1/y2)
+     * @param {string} type - Assessment type (ippt)
+     * @returns {string} Gold/silver rate percentage
+     */
+    calculateGoldSilverRate(personnel, phase, type) {
+        const completed = personnel.filter(p => p[phase]?.[type]);
+        if (completed.length === 0) return '0';
+        
+        const goldSilver = completed.filter(p => {
+            const result = p[phase]?.[type];
+            return result === 'Gold' || result === 'Silver';
+        }).length;
+        
+        return ((goldSilver / completed.length) * 100).toFixed(1);
+    }
+
+    /**
+     * Calculate marksman rate for range
+     * @param {Array} personnel - Personnel data
+     * @param {string} phase - Assessment phase (y1/y2)
+     * @param {string} type - Assessment type (range)
+     * @returns {string} Marksman rate percentage
+     */
+    calculateMarksmanRate(personnel, phase, type) {
+        const completed = personnel.filter(p => p[phase]?.[type]);
+        if (completed.length === 0) return '0';
+        
+        const marksman = completed.filter(p => {
+            const result = p[phase]?.[type];
+            return result === 'Marksman' || result === 'Sharpshooter';
+        }).length;
+        
+        return ((marksman / completed.length) * 100).toFixed(1);
+    }
+
+    /**
+     * Calculate average grade for an assessment
+     * @param {Array} personnel - Personnel data
+     * @param {string} phase - Assessment phase (y1/y2)
+     * @param {string} type - Assessment type (ippt/voc/range/atp)
+     * @returns {string} Average grade
+     */
+    calculateAverageGrade(personnel, phase, type) {
+        const completed = personnel.filter(p => p[phase]?.[type]);
+        if (completed.length === 0) return 'N/A';
+        
+        const gradeValues = {
+            'Gold': 4, 'Marksman': 4,
+            'Silver': 3, 'Sharpshooter': 3,
+            'Pass': 2,
+            'Fail': 1
+        };
+        
+        const total = completed.reduce((sum, p) => {
+            const grade = p[phase]?.[type];
+            return sum + (gradeValues[grade] || 0);
+        }, 0);
+        
+        const average = total / completed.length;
+        
+        if (average >= 3.5) return 'Excellent';
+        if (average >= 2.5) return 'Good';
+        if (average >= 1.5) return 'Average';
+        return 'Needs Improvement';
+    }
+
+    /**
+     * Calculate success rate for an assessment
+     * @param {Array} personnel - Personnel data
+     * @param {string} phase - Assessment phase (y1/y2)
+     * @param {string} type - Assessment type (ippt/voc/range/atp)
+     * @returns {string} Success rate percentage
+     */
+    calculateSuccessRate(personnel, phase, type) {
+        const completed = personnel.filter(p => p[phase]?.[type]);
+        if (completed.length === 0) return '0';
+        
+        const successful = completed.filter(p => {
+            const result = p[phase]?.[type];
+            return result !== 'Fail';
+        }).length;
+        
+        return ((successful / completed.length) * 100).toFixed(1);
     }
 
     /**
