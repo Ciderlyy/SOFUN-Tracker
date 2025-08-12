@@ -33,9 +33,16 @@ class SofunDataProcessor {
                 if (window.Worker) {
                     const worker = new Worker('js/excel-worker.js');
                     const result = await new Promise((resolve, reject) => {
-                        worker.onmessage = (e) => resolve(e.data);
-                        worker.onerror = (e) => reject(e);
-                        worker.postMessage({ arrayBuffer: data }, [data]);
+                        worker.onmessage = (e) => { try { worker.terminate(); } catch(_){} resolve(e.data); };
+                        worker.onerror = (e) => { try { worker.terminate(); } catch(_){} reject(e); };
+                        // Clone the ArrayBuffer so transferring it to the worker does NOT detach our original copy
+                        const transferableCopy = data.slice(0);
+                        try {
+                            worker.postMessage({ arrayBuffer: transferableCopy }, [transferableCopy]);
+                        } catch (postErr) {
+                            // Fallback: send without transfer list to avoid detachment in stricter environments
+                            worker.postMessage({ arrayBuffer: transferableCopy });
+                        }
                     });
                     if (result?.ok && (result.result.allInOneData || result.result.vocData)) {
                         // Rehydrate workbook-like minimal structure for our flow

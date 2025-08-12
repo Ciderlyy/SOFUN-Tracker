@@ -1,0 +1,1321 @@
+{
+  "personnel": [
+    {
+      "name": "DOMINIC ANG",
+      "category": "Regular",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "3WO",
+      "pes": "A",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null,
+        "cs": "",
+        "csDate": null
+      }
+    },
+    {
+      "name": "TAN KAI EN TERENCE",
+      "category": "Regular",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "LTA",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null,
+        "cs": "Marksman",
+        "csDate": null
+      }
+    },
+    {
+      "name": "EDEN KANG YI EN",
+      "category": "NSF",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "2LT",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-01T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "LEE JING SHENG",
+      "category": "Regular",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "SSG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null,
+        "cs": "Marksman",
+        "csDate": null
+      }
+    },
+    {
+      "name": "ERVIN LEE JIA LIANG",
+      "category": "Regular",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "2SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null,
+        "cs": "Marksman",
+        "csDate": null
+      }
+    },
+    {
+      "name": "SEAN LEE JIAN YI",
+      "category": "NSF",
+      "platoon": "COY HQ",
+      "unit": "COY HQ",
+      "rank": "2SG",
+      "pes": "A",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-03T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-03T00:00:00.000Z"
+    },
+    {
+      "name": "LOH JIA WEI",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "2SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-01T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-01T00:00:00.000Z"
+    },
+    {
+      "name": "QUEK ZHEN BENG",
+      "category": "Regular",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "2SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null,
+        "cs": "Marksman",
+        "csDate": null
+      }
+    },
+    {
+      "name": "JOSHUA JOSEPH JOHN",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-02T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-02T00:00:00.000Z"
+    },
+    {
+      "name": "WONG KANG YU KAISER",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-03T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-03T00:00:00.000Z"
+    },
+    {
+      "name": "HWANG ZAVIER",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "3SG",
+      "pes": "E1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-14T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-14T00:00:00.000Z"
+    },
+    {
+      "name": "JUAY DING HONG",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-11-03T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-03T00:00:00.000Z"
+    },
+    {
+      "name": "TAN JUN YUAN RYAN",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-10-25T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-11T00:00:00.000Z"
+    },
+    {
+      "name": "BRADLEY THAM",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-07-05T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Pass",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2024-07-04T00:00:00.000Z"
+    },
+    {
+      "name": "QUAH LIM KAI",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CFC",
+      "pes": "B2",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2026-01-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-04T00:00:00.000Z"
+    },
+    {
+      "name": "CHUA ZHI YANG JAVIER",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CFC",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2026-01-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-04T00:00:00.000Z"
+    },
+    {
+      "name": "JAVAN ONG ZHENG TAT",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B3",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2026-01-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman (Y2)",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-04T00:00:00.000Z"
+    },
+    {
+      "name": "BRENDAN CHEONG ZHENHAO",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2025-07-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2024-07-04T00:00:00.000Z"
+    },
+    {
+      "name": "JENSEN TOH RUIXUAN",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B2",
+      "lastUpdated": "2025-08-12T08:56:14.083Z",
+      "ordDate": "2026-01-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Pass",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass (Y2)",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "Fail",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-04T00:00:00.000Z"
+    },
+    {
+      "name": "OLSEN BONG GUAN RONG",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B4N3",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2025-10-25T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-11T00:00:00.000Z"
+    },
+    {
+      "name": "JEREMY TAN JIA LE",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-01-04T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "Marksman",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-01-04T00:00:00.000Z"
+    },
+    {
+      "name": "GOH TIONG LOON",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "CPL",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "BENJAMIN PANG ZHI HAO",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "LCP",
+      "pes": "B2",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Fail",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "WEE ZHENG KAI",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "LCP",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Pass",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "SENG WEI XIAN BENJAMIN",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "LCP",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "SANAT ANAND",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "LCP",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "SHAUN RAJ A S/O RAMAESH",
+      "category": "NSF",
+      "platoon": "Platoon 1",
+      "unit": "Platoon 1",
+      "rank": "LCP",
+      "pes": "B2",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-07-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Fail",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "LEROY NEO EU XIANG",
+      "category": "Regular",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "1SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null,
+        "cs": "Marksman",
+        "csDate": null
+      }
+    },
+    {
+      "name": "KOH JER MING",
+      "category": "Regular",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null,
+        "cs": "",
+        "csDate": null
+      }
+    },
+    {
+      "name": "ONG KAI FENG KEVIN",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-02T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "WONG FUKAI ZACHARY",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "A",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-02T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "LIAO QING WEI BENNY",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "A",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-01T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Gold",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-02T00:00:00.000Z"
+    },
+    {
+      "name": "DENZEL LEE EU HAN",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-13T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "Silver",
+        "ipptDate": null,
+        "voc": "Pass",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-05-14T00:00:00.000Z"
+    },
+    {
+      "name": "TIMOTHY ZHANG ZHI SHENG",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-12T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Pass",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-05-13T00:00:00.000Z"
+    },
+    {
+      "name": "ZACHARY LEONG",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 2",
+      "rank": "PTE",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-11-05T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2026-01-06T00:00:00.000Z"
+    },
+    {
+      "name": "BREDON OH JUN JIA",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "LCP",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2027-01-05T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2027-01-06T00:00:00.000Z"
+    },
+    {
+      "name": "MATTHEW GOILE JIAN FENG",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "LCP",
+      "pes": "B2",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2027-01-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2027-01-07T00:00:00.000Z"
+    },
+    {
+      "name": "PRASATH NADARAJAN",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "LCP",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2027-01-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2028-01-07T00:00:00.000Z"
+    },
+    {
+      "name": "CHAN XU YANG TIMOTHY",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "LCP",
+      "pes": "B4",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2027-01-06T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2029-01-07T00:00:00.000Z"
+    },
+    {
+      "name": "JADEN TAN YAN HAO",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "2LT",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-02T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "RYAN CHEN YI HENG",
+      "category": "NSF",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "2LT",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-02T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-03T00:00:00.000Z"
+    },
+    {
+      "name": "ERNEST FOO JUN WEI",
+      "category": "Regular",
+      "platoon": "Platoon 2",
+      "unit": "Platoon 2",
+      "rank": "2LT",
+      "pes": "A",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": null,
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "workYear": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "",
+        "atpDate": null,
+        "cs": "",
+        "csDate": null
+      }
+    },
+    {
+      "name": "FOO TZE JAE",
+      "category": "NSF",
+      "platoon": "Platoon 3",
+      "unit": "Platoon 3",
+      "rank": "3SG",
+      "pes": "B1",
+      "lastUpdated": "2025-08-12T08:56:14.084Z",
+      "ordDate": "2026-05-13T00:00:00.000Z",
+      "isORD": false,
+      "medicalStatus": "Fit",
+      "remedialTraining": [],
+      "y1": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "atp": "Marksman",
+        "atpDate": null
+      },
+      "y2": {
+        "ippt": "",
+        "ipptDate": null,
+        "voc": "",
+        "vocDate": null,
+        "range": "",
+        "rangeDate": null
+      },
+      "y1WindowEndDate": "2025-07-02T00:00:00.000Z"
+    }
+  ],
+  "auditLog": [
+    {
+      "timestamp": "8/12/2025, 9:48:26 PM",
+      "action": "SOFUN Tracker v2.0 initialized",
+      "user": "Current User",
+      "id": 1755006506641
+    },
+    {
+      "timestamp": "8/12/2025, 9:43:47 PM",
+      "action": "SOFUN Tracker v2.0 initialized",
+      "user": "Current User",
+      "id": 1755006227225
+    },
+    {
+      "timestamp": "8/12/2025, 9:39:28 PM",
+      "action": "Switched to dark mode",
+      "user": "Current User",
+      "id": 1755005968440
+    },
+    {
+      "timestamp": "8/12/2025, 6:44:57 PM",
+      "action": "SOFUN Tracker v2.0 initialized",
+      "user": "Current User",
+      "id": 1754995497313
+    },
+    {
+      "timestamp": "8/12/2025, 4:56:14 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754988974143
+    },
+    {
+      "timestamp": "8/12/2025, 4:45:25 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754988325408
+    },
+    {
+      "timestamp": "8/12/2025, 4:23:55 PM",
+      "action": "Deleted personnel: BREDON OH JUN JIA",
+      "user": "Current User",
+      "id": 1754987035785
+    },
+    {
+      "timestamp": "8/12/2025, 4:23:44 PM",
+      "action": "Deleted personnel: FOO TZE JAE",
+      "user": "Current User",
+      "id": 1754987024205
+    },
+    {
+      "timestamp": "8/12/2025, 4:23:19 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754986999308
+    },
+    {
+      "timestamp": "8/12/2025, 4:21:58 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754986918324
+    },
+    {
+      "timestamp": "8/2/2025, 9:50:17 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754142617453
+    },
+    {
+      "timestamp": "8/2/2025, 4:10:24 PM",
+      "action": "Imported Excel file: 43 records processed",
+      "user": "Current User",
+      "id": 1754122224473
+    },
+    {
+      "timestamp": "8/2/2025, 9:34:30 AM",
+      "action": "Generated sample data for testing",
+      "user": "Current User",
+      "id": 1754098470768
+    }
+  ],
+  "preferences": {},
+  "exportDate": "2025-08-12T13:48:31.403Z",
+  "version": "2.0"
+}

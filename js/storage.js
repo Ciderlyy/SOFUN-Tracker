@@ -20,6 +20,8 @@ class SofunStorage {
         
         this.version = APP_CONFIG.version;
         this.initialized = false;
+        this.remote = { enabled: false };
+        this.idb = { db: null, ready: false, name: 'sofun-db', store: 'state' };
         this.init();
     }
 
@@ -35,12 +37,75 @@ class SofunStorage {
 
             // Check for version migrations
             this.checkVersionMigration();
+            // Initialize IndexedDB for durable local database
+            this.initIndexedDB();
             this.initialized = true;
             
             console.log('✅ SOFUN Storage initialized');
         } catch (error) {
             logError('Storage initialization failed', error);
         }
+    }
+
+    /**
+     * IndexedDB setup for durable local database
+     */
+    initIndexedDB() {
+        try {
+            if (!('indexedDB' in window)) return;
+            const req = indexedDB.open(this.idb.name, 1);
+            req.onupgradeneeded = (ev) => {
+                const db = ev.target.result;
+                if (!db.objectStoreNames.contains(this.idb.store)) {
+                    db.createObjectStore(this.idb.store);
+                }
+            };
+            req.onsuccess = (ev) => {
+                this.idb.db = ev.target.result;
+                this.idb.ready = true;
+                // On first open, try hydrate localStorage from IndexedDB if newer
+                this.hydrateFromIndexedDB();
+                console.log('✅ IndexedDB ready');
+            };
+            req.onerror = () => {
+                console.warn('IndexedDB init failed');
+            };
+        } catch (_) { /* noop */ }
+    }
+
+    idbSet(key, value) {
+        try {
+            if (!this.idb.ready) return;
+            const tx = this.idb.db.transaction(this.idb.store, 'readwrite');
+            tx.objectStore(this.idb.store).put(value, key);
+        } catch (_) { /* noop */ }
+    }
+
+    idbGet(key) {
+        return new Promise((resolve) => {
+            try {
+                if (!this.idb.ready) return resolve(undefined);
+                const tx = this.idb.db.transaction(this.idb.store, 'readonly');
+                const req = tx.objectStore(this.idb.store).get(key);
+                req.onsuccess = (e) => resolve(e.target.result);
+                req.onerror = () => resolve(undefined);
+            } catch (_) { resolve(undefined); }
+        });
+    }
+
+    async hydrateFromIndexedDB() {
+        try {
+            const idbData = await this.idbGet(this.keys.PERSONNEL_DATA);
+            if (!idbData) return;
+            const ls = localStorage.getItem(this.keys.PERSONNEL_DATA);
+            const lsTs = ls ? (JSON.parse(ls).timestamp || '') : '';
+            const idbTs = idbData.timestamp || '';
+            if (!ls || idbTs > lsTs) {
+                localStorage.setItem(this.keys.PERSONNEL_DATA, JSON.stringify(idbData));
+                localStorage.setItem(this.keys.LAST_UPDATED, idbTs);
+                this.dispatchStorageEvent('idbHydrate');
+            }
+        } catch (_) { /* noop */ }
     }
 
     /**
@@ -106,7 +171,10 @@ class SofunStorage {
             }
 
             localStorage.setItem(this.keys.PERSONNEL_DATA, serialized);
-            localStorage.setItem(this.keys.LAST_UPDATED, new Date().toISOString());
+            const ts = new Date().toISOString();
+            localStorage.setItem(this.keys.LAST_UPDATED, ts);
+            // Mirror to IndexedDB
+            this.idbSet(this.keys.PERSONNEL_DATA, JSON.parse(serialized));
             
             console.log(`✅ Saved ${data.length} personnel records`);
             return true;
@@ -226,6 +294,7 @@ class SofunStorage {
             };
 
             localStorage.setItem(this.keys.AUDIT_LOG, JSON.stringify(logData));
+            this.idbSet(this.keys.AUDIT_LOG, logData);
             return true;
             
         } catch (error) {
@@ -277,6 +346,7 @@ class SofunStorage {
             };
 
             localStorage.setItem(this.keys.USER_PREFERENCES, JSON.stringify(prefData));
+            this.idbSet(this.keys.USER_PREFERENCES, prefData);
             return true;
             
         } catch (error) {
@@ -284,6 +354,8 @@ class SofunStorage {
             return false;
         }
     }
+
+    // Remote sync removed per request (local database only)
 
     /**
      * Load user preferences

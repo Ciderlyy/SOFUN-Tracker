@@ -687,6 +687,27 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('dark-mode');
         document.querySelector('.dark-mode-toggle').textContent = '☀️ Light Mode';
     }
+    // Seed demo data if enabled and storage empty
+    (async function seedDemo(){
+      try {
+        const cfg = window.SOFUN_DEMO_SEED;
+        if (!cfg || !cfg.enabled) return;
+        const hasData = !!localStorage.getItem('sofunData');
+        if (hasData && !cfg.always) return;
+        const res = await fetch(cfg.url, { cache: 'no-cache' });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (json && Array.isArray(json.personnel)) {
+          localStorage.setItem('sofunData', JSON.stringify({
+            personnel: json.personnel,
+            version: APP_CONFIG.version,
+            timestamp: new Date().toISOString(),
+            recordCount: json.personnel.length
+          }));
+          try { storage?.idbSet?.('sofunData', JSON.parse(localStorage.getItem('sofunData'))); } catch(_){}
+        }
+      } catch(_) { /* noop */ }
+    })();
 });
 
 /* ---------- Advanced Audit Functions ---------- */
@@ -832,5 +853,15 @@ function showAuditSummary() {
 }
 
 </script>
+
+<!-- Demo-only seeding (optional). On first visit with empty storage, prefill from bundled JSON. -->
+<script>
+window.SOFUN_DEMO_SEED = {
+  enabled: true,
+  url: 'assets/seed-personnel.json',
+  always: false
+};
+</script>
+
 </body>
 </html>
