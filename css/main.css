@@ -32,7 +32,7 @@ body {
     background: var(--primary-gradient);
     min-height: 100vh;
     padding: 20px;
-    transition: all 0.3s ease;
+    transition: background 0.4s ease, color 0.2s ease;
     position: relative;
     overflow-x: hidden;
 }
@@ -46,6 +46,12 @@ body {
     border-radius: 20px;
     padding: 30px;
     box-shadow: var(--shadow);
+    animation: containerIn 300ms ease;
+}
+
+@keyframes containerIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Header Section ---------- */
@@ -246,6 +252,8 @@ body {
 .stat-card:hover {
     transform: translateY(-5px);
 }
+
+.stat-card { transition: transform 250ms ease, box-shadow 250ms ease; }
 
 .stat-card h3 {
     font-size: 1.1em;
@@ -455,6 +463,37 @@ th {
 
 tr:hover {
     background: var(--bg-color);
+}
+
+/* Mobile-friendly table: stack cells with labels */
+@media (max-width: 700px) {
+  table thead {
+    display: none;
+  }
+  table, tbody, tr, td {
+    display: block;
+    width: 100%;
+  }
+  tr.table-row {
+    margin-bottom: 10px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f1f3f5;
+  }
+  td:last-child { border-bottom: 0; }
+  td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #495057;
+    margin-right: 10px;
+  }
 }
 
 tr:nth-child(even) {

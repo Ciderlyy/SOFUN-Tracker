@@ -44,7 +44,7 @@ tr:hover .serial-number {
 
 /* ---------- Buttons ---------- */
 .btn {
-    padding: 14px 28px;
+    padding: 12px 24px;
     border: none;
     border-radius: var(--border-radius-small);
     cursor: pointer;
@@ -570,8 +570,8 @@ button:focus,
 /* ---------- Mobile Responsive Components ---------- */
 @media (max-width: 768px) {
     .btn {
-        padding: 10px 20px;
-        font-size: 0.85em;
+        padding: 12px 18px;
+        font-size: 1em;
         margin: 3px;
     }
     

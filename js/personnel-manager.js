@@ -262,42 +262,42 @@ class PersonnelManager {
         
         if (category === 'nsf') {
             return `
-                <tr>
-                    <td><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
-                    <td class="serial-number">${serialNumber}.</td>
-                    <td>${escapeHtml(person.name)}</td>
-                    <td>${escapeHtml(person.platoon || '-')}</td>
-                    <td>${formatDate(person.ordDate)}</td>
-                    <td>${formatDate(person.y1WindowEndDate)}</td>
-                    <td>${formatDate(person.y2WindowEndDate || person.ordDate)}</td>
-                    <td><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.ippt)}">${displayGrade(person.y1?.ippt, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.voc)}">${displayGrade(person.y1?.voc, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y1?.atp)}">${displayGrade(person.y1?.atp, '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.ippt)}">${displayGrade(person.y2?.ippt, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.voc)}">${displayGrade(person.y2?.voc, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.y2?.range)}">${displayGrade(person.y2?.range, 'Pending')}</span></td>
-                    <td>${escapeHtml(person.medicalStatus || 'Fit')}</td>
-                    <td><span class="status-badge ${status.class}">${status.text}</span></td>
-                    <td><button class="btn btn-edit" onclick="personnelManager.openEditModal(${globalIndex})">Edit</button></td>
+                <tr class="table-row">
+                    <td data-label="Select"><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
+                    <td class="serial-number" data-label="No.">${serialNumber}.</td>
+                    <td data-label="Name">${escapeHtml(person.name)}</td>
+                    <td data-label="Platoon">${escapeHtml(person.platoon || '-')}</td>
+                    <td data-label="ORD Date">${formatDate(person.ordDate)}</td>
+                    <td data-label="Y1 Last Window">${formatDate(person.y1WindowEndDate)}</td>
+                    <td data-label="Y2 Last Window">${formatDate(person.y2WindowEndDate || person.ordDate)}</td>
+                    <td data-label="PES"><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
+                    <td data-label="Y1 IPPT"><span class="status-badge status-${getStatusClass(person.y1?.ippt)}">${displayGrade(person.y1?.ippt, '-')}</span></td>
+                    <td data-label="Y1 VOC"><span class="status-badge status-${getStatusClass(person.y1?.voc)}">${displayGrade(person.y1?.voc, '-')}</span></td>
+                    <td data-label="Y1 ATP"><span class="status-badge status-${getStatusClass(person.y1?.atp)}">${displayGrade(person.y1?.atp, '-')}</span></td>
+                    <td data-label="Y2 IPPT"><span class="status-badge status-${getStatusClass(person.y2?.ippt)}">${displayGrade(person.y2?.ippt, 'Pending')}</span></td>
+                    <td data-label="Y2 VOC"><span class="status-badge status-${getStatusClass(person.y2?.voc)}">${displayGrade(person.y2?.voc, 'Pending')}</span></td>
+                    <td data-label="Y2 Range"><span class="status-badge status-${getStatusClass(person.y2?.range)}">${displayGrade(person.y2?.range, 'Pending')}</span></td>
+                    <td data-label="Medical">${escapeHtml(person.medicalStatus || 'Fit')}</td>
+                    <td data-label="Progress"><span class="status-badge ${status.class}">${status.text}</span></td>
+                    <td data-label="Actions"><button class="btn btn-edit" onclick="personnelManager.openEditModal(${globalIndex})">Edit</button></td>
                 </tr>
             `;
         } else { // regulars
             return `
-                <tr>
-                    <td><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
-                    <td class="serial-number">${serialNumber}.</td>
-                    <td>${escapeHtml(person.name)}</td>
-                    <td>${escapeHtml(person.unit || person.platoon || '-')}</td>
-                    <td>${escapeHtml(person.rank || '-')}</td>
-                    <td><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.workYear?.ippt)}">${displayGrade(person.workYear?.ippt, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.workYear?.voc)}">${displayGrade(person.workYear?.voc, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.workYear?.atp)}">${displayGrade(person.workYear?.atp, 'Pending')}</span></td>
-                    <td><span class="status-badge status-${getStatusClass(person.workYear?.cs)}">${displayGrade(person.workYear?.cs, 'Pending')}</span></td>
-                    <td>${escapeHtml(person.medicalStatus || 'Fit')}</td>
-                    <td><span class="status-badge ${status.class}">${status.text}</span></td>
-                    <td><button class="btn btn-edit" onclick="personnelManager.openEditModal(${globalIndex})">Edit</button></td>
+                <tr class="table-row">
+                    <td data-label="Select"><input type="checkbox" style="display: ${checkboxDisplay}" ${isChecked ? 'checked' : ''} onchange="personnelManager.toggleSelection('${escapeHtml(person.name)}')"></td>
+                    <td class="serial-number" data-label="No.">${serialNumber}.</td>
+                    <td data-label="Name">${escapeHtml(person.name)}</td>
+                    <td data-label="Unit">${escapeHtml(person.unit || person.platoon || '-')}</td>
+                    <td data-label="Rank">${escapeHtml(person.rank || '-')}</td>
+                    <td data-label="PES"><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
+                    <td data-label="IPPT"><span class="status-badge status-${getStatusClass(person.workYear?.ippt)}">${displayGrade(person.workYear?.ippt, 'Pending')}</span></td>
+                    <td data-label="VOC"><span class="status-badge status-${getStatusClass(person.workYear?.voc)}">${displayGrade(person.workYear?.voc, 'Pending')}</span></td>
+                    <td data-label="ATP"><span class="status-badge status-${getStatusClass(person.workYear?.atp)}">${displayGrade(person.workYear?.atp, 'Pending')}</span></td>
+                    <td data-label="CS"><span class="status-badge status-${getStatusClass(person.workYear?.cs)}">${displayGrade(person.workYear?.cs, 'Pending')}</span></td>
+                    <td data-label="Medical">${escapeHtml(person.medicalStatus || 'Fit')}</td>
+                    <td data-label="Status"><span class="status-badge ${status.class}">${status.text}</span></td>
+                    <td data-label="Actions"><button class="btn btn-edit" onclick="personnelManager.openEditModal(${globalIndex})">Edit</button></td>
                 </tr>
             `;
         }
