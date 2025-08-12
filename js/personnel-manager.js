@@ -436,6 +436,7 @@ class PersonnelManager {
         try {
             // Basic information
             this.setFormValue('editName', person.name);
+            this.setFormValue('editRank', person.rank || '');
             this.setFormValue('editPes', person.pes || '');
             this.setFormValue('editPlatoon', person.platoon || '');
             this.setFormValue('editOrdDate', person.ordDate || '');
@@ -591,6 +592,7 @@ class PersonnelManager {
     extractFormData() {
         return {
             name: document.getElementById('editName')?.value?.trim() || '',
+            rank: document.getElementById('editRank')?.value || '',
             pes: document.getElementById('editPes')?.value || '',
             platoon: document.getElementById('editPlatoon')?.value || '',
             ordDate: document.getElementById('editOrdDate')?.value || '',
@@ -640,6 +642,10 @@ class PersonnelManager {
             showErrorMessage('Personnel name is required');
             return false;
         }
+        // Optional: normalize rank to uppercase short code
+        if (data.rank) {
+            data.rank = data.rank.toUpperCase().trim().substring(0, 10);
+        }
         
         if (data.platoon && !isValidPlatoon(data.platoon)) {
             showErrorMessage(`Invalid platoon: ${data.platoon}`);
@@ -672,6 +678,7 @@ class PersonnelManager {
      */
     updatePersonnelRecord(person, data) {
         person.name = sanitizePersonnelName(data.name);
+        person.rank = data.rank;
         person.platoon = data.platoon;
         person.unit = data.platoon; // Keep unit in sync
         person.ordDate = data.ordDate;
