@@ -27,7 +27,27 @@ class SofunDataProcessor {
             console.log('Starting Excel file processing...');
             this.validateFile(file);
             const data = await file.arrayBuffer();
-            const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+            // Try Web Worker if available for non-blocking parse
+            let workbook;
+            try {
+                if (window.Worker) {
+                    const worker = new Worker('js/excel-worker.js');
+                    const result = await new Promise((resolve, reject) => {
+                        worker.onmessage = (e) => resolve(e.data);
+                        worker.onerror = (e) => reject(e);
+                        worker.postMessage({ arrayBuffer: data }, [data]);
+                    });
+                    if (result?.ok && (result.result.allInOneData || result.result.vocData)) {
+                        // Rehydrate workbook-like minimal structure for our flow
+                        workbook = { Sheets: {} };
+                        if (result.result.allInOneData) workbook.Sheets['All in one view'] = XLSX.utils.aoa_to_sheet(result.result.allInOneData);
+                        if (result.result.vocData) workbook.Sheets['VOC'] = XLSX.utils.aoa_to_sheet(result.result.vocData);
+                    }
+                }
+            } catch (_) { /* fallback below */ }
+            if (!workbook) {
+                workbook = XLSX.read(data, { type: 'array', cellDates: true });
+            }
             
             // Find the 'All in one view' sheet (case-insensitive)
             const availableSheets = Object.keys(workbook.Sheets);

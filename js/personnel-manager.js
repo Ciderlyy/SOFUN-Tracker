@@ -565,13 +565,10 @@ class PersonnelManager {
                 el._blurNormalize = () => {
                     const raw = el.value?.trim();
                     if (!raw) return;
-                    // Replace slashes with dashes for consistency
-                    const normalized = raw.replace(/\//g, '-');
-                    // Allow future for ORD/Y1 window fields
-                    const allowFuture = el.id === 'editOrdDate' || el.id === 'editY1WindowDate';
-                    const parsed = validateDateInput(normalized, allowFuture);
-                    if (parsed) {
-                        el.value = formatDateForInput(parsed);
+                    // Normalize to YYYY-MM-DD date-only
+                    const iso = parseToISODateOnly(raw);
+                    if (iso) {
+                        el.value = iso;
                         try { el.setAttribute('value', el.value); } catch (_) {}
                     }
                 };

@@ -74,6 +74,37 @@ function formatDateForInput(value) {
 }
 
 /**
+ * Parse human date to YYYY-MM-DD (date-only). Accepts:
+ * - YYYY-MM-DD
+ * - DD-MM-YYYY, DD/MM/YYYY, DD-MM-YY, DD/MM/YY
+ * - 2 Jul 2025 / 02 July 2025
+ * Returns null if not parseable.
+ */
+function parseToISODateOnly(input) {
+    if (!input) return null;
+    let s = String(input).trim();
+    if (!s) return null;
+    s = s.replace(/[./]/g, '-').replace(/\s+/g, ' ');
+    // YYYY-MM-DD
+    let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (m) return `${m[1]}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`;
+    // DD-MM-YYYY or DD-MM-YY
+    m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{2,4})$/);
+    if (m) {
+        const y = m[3].length === 2 ? (parseInt(m[3],10) < 30 ? 2000 + parseInt(m[3],10) : 1900 + parseInt(m[3],10)) : parseInt(m[3],10);
+        return `${y}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    }
+    // 2 Jul 2025 / 02 July 2025
+    m = s.match(/^(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})$/);
+    if (m) {
+        const months = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+        const mm = months[m[2].slice(0,3).toLowerCase()];
+        if (mm) return `${m[3]}-${String(mm).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    }
+    return null;
+}
+
+/**
  * Get current timestamp string
  * @returns {string} Current timestamp in locale string
  */

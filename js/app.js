@@ -366,6 +366,12 @@ class SofunApp {
                 return;
             }
 
+            // Pre-validate filename and extension
+            if (!/\.(xlsx|xls)$/i.test(file.name)) {
+                showErrorMessage('Unsupported file format. Please use .xlsx or .xls');
+                return;
+            }
+
             // Confirm replacement if database already exists
             if (Array.isArray(this.personnelData) && this.personnelData.length > 0) {
                 const confirmed = confirm('Re-import will REPLACE the existing saved database with the content of this Excel file. Continue?');
