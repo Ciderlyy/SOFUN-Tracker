@@ -5,11 +5,12 @@
 
 /* ---------- Dark Mode Variables ---------- */
 body.dark-mode {
-    --primary-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    --bg-color: #1a1a2e;
-    --text-color: #eee;
-    --card-bg: rgba(30, 30, 46, 0.95);
-    --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    /* darker foxtrot */
+    --primary-gradient: linear-gradient(135deg, #070708 0%, #0b0c0f 100%);
+    --bg-color: #0b0c0f;
+    --text-color: #ecd9a3;
+    --card-bg: rgba(13, 13, 17, 0.95);
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
 }
 
 /* ---------- Dark Mode Body & Background ---------- */
@@ -26,7 +27,7 @@ body.dark-mode {
 
 /* ---------- Dark Mode Typography ---------- */
 .dark-mode .header h1 {
-    background: linear-gradient(45deg, #5dade2, #3498db);
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -64,8 +65,8 @@ body.dark-mode {
 
 /* ---------- Dark Mode Statistics Cards ---------- */
 .dark-mode .stat-card {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    color: white;
+    background: linear-gradient(135deg, #d4af37 0%, #b38b2a 100%);
+    color: #1a1a1a;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -277,8 +278,8 @@ body.dark-mode {
 }
 
 .dark-mode .category-tab.active {
-    background: linear-gradient(45deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
+    color: #1a1a1a;
 }
 
 .dark-mode .category-tab:hover:not(.active) {

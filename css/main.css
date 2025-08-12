@@ -11,16 +11,24 @@
 }
 
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --bg-color: #f8f9fa;
-    --text-color: #2c3e50;
-    --card-bg: rgba(255, 255, 255, 0.95);
-    --shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    /* Foxtrot black/gold palette */
+    --primary-gradient: linear-gradient(135deg, #0b0b0d 0%, #151518 100%);
+    --bg-color: #0f1115;
+    --text-color: #e9d8a6; /* soft gold */
+    --card-bg: rgba(18, 18, 22, 0.95);
+    --shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+
+    --primary-color: #d4af37; /* gold */
+    --accent-color: #c89b3c;
+    --success-color: #27ae60;
+    --error-color: #e74c3c;
+    --border-color: #292a2f;
+    --surface-color: #15161a;
 }
 
 /* ---------- Core Layout ---------- */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--primary-gradient);
     min-height: 100vh;
     padding: 20px;
@@ -29,33 +37,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ---------- Decorative Background ---------- */
-#decorative-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    pointer-events: auto;
-    opacity: 0.4;
-    transition: opacity 0.3s ease;
-}
-
-body.dark-mode #decorative-background {
-    opacity: 0.3;
-}
-
-/* Reduce intensity on mobile for better performance */
-@media (max-width: 768px) {
-    #decorative-background {
-        opacity: 0.2;
-    }
-    
-    body.dark-mode #decorative-background {
-        opacity: 0.15;
-    }
-}
+/* Decorative background removed */
 
 .container {
     max-width: 1600px;
@@ -77,10 +59,11 @@ body.dark-mode #decorative-background {
 .header h1 {
     font-size: 2.5em;
     margin-bottom: 10px;
-    background: linear-gradient(45deg, #3498db, #2980b9);
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    font-family: 'Oswald', 'Inter', sans-serif;
 }
 
 .header p {
@@ -131,8 +114,8 @@ body.dark-mode #decorative-background {
 
 /* ---------- Chart Selection Panel ---------- */
 .chart-selection-panel {
-    background: rgba(52, 152, 219, 0.05);
-    border: 2px solid rgba(52, 152, 219, 0.2);
+    background: rgba(212, 175, 55, 0.05);
+    border: 2px solid rgba(212, 175, 55, 0.2);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 25px;
@@ -251,8 +234,8 @@ body.dark-mode #decorative-background {
 
 /* ---------- Statistics Cards ---------- */
 .stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #d4af37 0%, #b38b2a 100%);
+    color: #1a1a1a;
     padding: 20px;
     border-radius: 15px;
     text-align: center;
@@ -509,10 +492,10 @@ tr:nth-child(even) {
 }
 
 .category-tab.active {
-    background: linear-gradient(45deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
+    color: #1a1a1a;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
 }
 
 .category-tab:hover:not(.active) {

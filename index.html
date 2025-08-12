@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enhanced SOFUN Tracker System v2.0</title>
+        <link rel="icon" type="image/png" href="assets/foxtrot-logo.png" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
     
     <!-- External Libraries (keep these exactly as they are) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -22,11 +26,11 @@
     </style>
 </head>
 <body>
-    <!-- Decorative Background Canvas -->
-    <canvas id="decorative-background"></canvas>
+    <!-- Background canvas removed per request -->
     
     <div class="container">
         <div class="header">
+            <img src="assets/foxtrot-logo.png" alt="Foxtrot Logo" class="unit-logo" onerror="this.style.display='none'"/>
             <h1>SOFUN Tracker System v2.0</h1>
             <p>Enhanced NSF & Regular Personnel Assessment Tracking</p>
             <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
@@ -42,6 +46,11 @@
                         <button class="btn btn-primary" id="processFileBtn" onclick="processExcelFile()">
                             📊 Process File
                         </button>
+                            <button class="btn" onclick="window.app?.exportBackup()">💾 Export Backup</button>
+                            <label class="btn">
+                                📥 Import Backup
+                                <input type="file" style="display:none" accept="application/json" onchange="(function(e){const f=e.target.files[0]; if(window.app&&f){window.app.importBackupFromFile(f); e.target.value='';}})(event)">
+                            </label>
                     </div>
                     <div id="fileStatus" class="file-status"></div>
                     <small>Excel file must contain sheets named "IPPT", "RANGE", and "VOC"</small>
@@ -275,7 +284,10 @@
 
             <div id="nsf" class="category-content active">
                 <h3>NSF Personnel</h3>
-                <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                    <button class="btn btn-success" onclick="addNewPersonnel('nsf')">➕ Add Personnel</button>
+                </div>
                 <div class="table-container">
                     <table id="nsfTable">
                         <thead>
@@ -317,7 +329,10 @@
 
             <div id="regulars" class="category-content">
                 <h3>Regular Personnel</h3>
-                <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="enableBulkSelect()">Select Multiple</button>
+                    <button class="btn btn-success" onclick="addNewPersonnel('regulars')">➕ Add Personnel</button>
+                </div>
                 <div class="table-container">
                     <table id="regularsTable">
                         <thead>
@@ -624,7 +639,7 @@
     <script src="js/data-processor.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/personnel-manager.js"></script>
-    <script src="js/decorative-background.js"></script>
+    
     <script src="js/advanced-audit.js"></script>
     <script src="js/app.js"></script>
 
@@ -632,11 +647,18 @@
 <!-- Add this TEMPORARY script tag to the bottom of your index.html, just before </body> -->
 
 <script>
-// Quick temporary fix for dark mode - we'll organize this properly later
+// Quick temporary fix for dark mode - delegate to app if available
 function toggleDarkMode() {
+    if (window.app && typeof window.app.toggleDarkMode === 'function') {
+        window.app.toggleDarkMode();
+        return;
+    }
+    // Fallback if app not ready yet
     document.body.classList.toggle('dark-mode');
     const btn = document.querySelector('.dark-mode-toggle');
-    btn.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+    if (btn) {
+        btn.textContent = document.body.classList.contains('dark-mode') ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 

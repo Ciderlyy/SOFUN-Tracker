@@ -192,6 +192,8 @@ class PersonnelManager {
         this.updateTable('nsf', filteredData);
         this.updateTable('regulars', filteredData);
         this.updateSummaryTable(filteredData);
+        this.refreshRowNumbers('nsf');
+        this.refreshRowNumbers('regulars');
     }
 
     /**
@@ -221,9 +223,27 @@ class PersonnelManager {
                 const serialNumber = index + 1; // Start from 1
                 return this.generateTableRow(person, globalIndex, category, serialNumber);
             }).join('');
+            this.refreshRowNumbers(category);
             
         } catch (error) {
             logError(`Table update failed for ${category}`, error);
+        }
+    }
+
+    /**
+     * Recalculate and render the serial numbers for the given table
+     */
+    refreshRowNumbers(category) {
+        try {
+            const tbody = document.getElementById(category + 'Body');
+            if (!tbody) return;
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach((row, idx) => {
+                const cell = row.querySelector('.serial-number');
+                if (cell) cell.textContent = (idx + 1) + '.';
+            });
+        } catch (error) {
+            // non-critical
         }
     }
 

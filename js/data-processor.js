@@ -163,11 +163,13 @@ class SofunDataProcessor {
                 const workYearAtp = row[13]?.toString().trim();
                 const workYearCs = row[14]?.toString().trim();
                 // Build/merge personnel record
-                const key = name.toUpperCase();
-                const personnelCategory = (service && service.toUpperCase() === 'NSF') ? 'NSF' : 'Regular';
+                const key = sanitizePersonnelName(name);
+                // Default to NSF unless explicitly marked Regular
+                const serviceUpper = (service || '').toUpperCase();
+                const personnelCategory = serviceUpper.includes('REG') ? 'Regular' : 'NSF';
                 if (!personnelMap.has(key)) {
                     const baseRecord = {
-                        name: name.toUpperCase(),
+                        name: key,
                         category: personnelCategory,
                         platoon: currentPlatoon || 'Unassigned',
                         unit: currentPlatoon || 'Unassigned',

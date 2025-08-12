@@ -5,11 +5,8 @@
 
 /* ---------- Serial Numbers ---------- */
 .serial-number {
-    font-weight: 700;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-weight: 800;
+    color: var(--text-color);
     text-align: center;
     min-width: 50px;
     font-size: 1em;
@@ -17,6 +14,7 @@
     border-radius: 20px;
     position: relative;
     transition: var(--transition-fast);
+    text-shadow: 0 0 4px rgba(0,0,0,0.6);
 }
 
 .serial-number::before {
@@ -41,7 +39,7 @@ tr:hover .serial-number::before {
 
 tr:hover .serial-number {
     transform: scale(1.1);
-    filter: drop-shadow(0 0 8px rgba(79, 172, 254, 0.4));
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.35));
 }
 
 /* ---------- Buttons ---------- */
@@ -62,6 +60,15 @@ tr:hover .serial-number {
     overflow: hidden;
     backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Unit Logo */
+.unit-logo {
+    width: 120px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
 }
 
 .btn::before {
@@ -90,8 +97,8 @@ tr:hover .serial-number {
 }
 
 .btn-primary {
-    background: linear-gradient(45deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
+    color: #1a1a1a;
 }
 
 .btn-primary:hover {
@@ -142,8 +149,8 @@ tr:hover .serial-number {
 .btn-edit {
     padding: 5px 10px;
     font-size: 0.8em;
-    background: linear-gradient(45deg, #3498db, #2980b9);
-    color: white;
+    background: linear-gradient(45deg, #d4af37, #b38b2a);
+    color: #1a1a1a;
     min-width: 60px;
 }
 
@@ -218,9 +225,9 @@ tr:hover .serial-number {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    background: linear-gradient(45deg, #6c5ce7, #5f3dc4);
-    color: white;
-    border: 1px solid #5f3dc4;
+    background: linear-gradient(45deg, #b38b2a, #8c6d1f);
+    color: #1a1a1a;
+    border: 1px solid #8c6d1f;
     transition: all 0.2s ease;
 }
 

@@ -62,7 +62,7 @@ class SofunApp {
                 console.log('No existing data found - starting with empty dataset');
                 window.advancedAudit.logStorage('INFO', 'No existing personnel data found - clean start', {
                     isFirstRun: true,
-                    storageUsage: getStorageUsage()
+                    storageUsage: storage.getStorageUsage()
                 });
             } else {
                 window.advancedAudit.logStorage('INFO', 'Personnel data loaded successfully', {
@@ -71,10 +71,14 @@ class SofunApp {
                         nsf: this.personnelData.filter(p => p.category === 'NSF').length,
                         regular: this.personnelData.filter(p => p.category === 'Regular').length
                     },
-                    storageUsage: getStorageUsage()
+                    storageUsage: storage.getStorageUsage()
                 });
+                // Reflect saved-data mode in UI
+                this.updateImportUIForSavedData();
             }
             
+            // Mark initialized before first UI update so updateAll() runs
+            this.initialized = true;
             // Initial UI update
             window.advancedAudit.logUI('DEBUG', 'Performing initial UI update');
             this.updateAll();
@@ -85,8 +89,8 @@ class SofunApp {
             
             // Ensure file upload button is ready
             this.initializeFileUpload();
+            this.updateImportUIForSavedData();
             
-            this.initialized = true;
             storage.addAuditEntry(`SOFUN Tracker v${this.version} initialized`);
             
             const initTime = window.advancedAudit.endTimer('appInitialization');
@@ -96,7 +100,7 @@ class SofunApp {
                 totalPersonnel: this.personnelData.length,
                 modulesLoaded: ['dashboard', 'storage', 'dataProcessor', 'personnelManager', 'advancedAudit'],
                 memoryUsage: getMemorySnapshot(),
-                storageUsage: getStorageUsage()
+                storageUsage: storage.getStorageUsage()
             });
             
             console.log('✅ SOFUN Tracker fully initialized and ready');
@@ -362,6 +366,18 @@ class SofunApp {
                 return;
             }
 
+            // Confirm replacement if database already exists
+            if (Array.isArray(this.personnelData) && this.personnelData.length > 0) {
+                const confirmed = confirm('Re-import will REPLACE the existing saved database with the content of this Excel file. Continue?');
+                if (!confirmed) {
+                    if (fileStatus) {
+                        fileStatus.textContent = 'Re-import cancelled.';
+                        fileStatus.className = 'file-status';
+                    }
+                    return;
+                }
+            }
+
             // Update status to processing
             if (fileStatus) {
                 fileStatus.textContent = '⏳ Processing Excel file...';
@@ -400,6 +416,7 @@ class SofunApp {
                 this.saveData();
                 this.updateAll();
                 this.addAuditEntry(`Imported Excel file: ${result.recordCount} records processed`);
+                this.updateImportUIForSavedData();
                 
                 window.advancedAudit.logData('INFO', 'Excel import completed successfully', {
                     fileName: file.name,
@@ -455,7 +472,9 @@ class SofunApp {
             // Reset button
             if (processBtn) {
                 processBtn.disabled = false;
-                processBtn.innerHTML = '📊 Process File';
+                processBtn.innerHTML = (Array.isArray(this.personnelData) && this.personnelData.length > 0)
+                    ? '🔄 Replace Data (Re-import)'
+                    : '📊 Process File';
             }
             
             // Clear file input
@@ -501,6 +520,56 @@ class SofunApp {
      * Generate sample data
      */
     // Sample data generation removed for security reasons
+
+    /**
+     * Export full backup (personnel, audit log, preferences)
+     */
+    exportBackup() {
+        try {
+            const data = storage.exportAllData();
+            if (!data) {
+                showErrorMessage('Nothing to export.');
+                return;
+            }
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sofun_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            this.addAuditEntry('Exported backup JSON');
+        } catch (error) {
+            logError('Backup export failed', error);
+            showErrorMessage('Failed to export backup.');
+        }
+    }
+
+    /**
+     * Import backup JSON from file
+     * @param {File} file
+     */
+    async importBackupFromFile(file) {
+        try {
+            if (!file) return;
+            const text = await file.text();
+            const json = JSON.parse(text);
+            if (!confirm('Importing a backup will REPLACE the current saved database. Continue?')) return;
+            const success = storage.importData(json);
+            if (success) {
+                this.loadData();
+                this.updateAll();
+                this.updateImportUIForSavedData();
+                showSuccessMessage('Backup restored successfully');
+                this.addAuditEntry('Imported backup JSON');
+            } else {
+                showErrorMessage('Failed to restore backup.');
+            }
+        } catch (error) {
+            logError('Backup import failed', error);
+            showErrorMessage('Invalid backup file.');
+        }
+    }
 
     /**
      * Download Excel report
@@ -731,6 +800,32 @@ class SofunApp {
     }
 
     /**
+     * Update import controls to reflect saved-data mode (import once UX)
+     */
+    updateImportUIForSavedData() {
+        try {
+            const hasData = Array.isArray(this.personnelData) && this.personnelData.length > 0;
+            const processBtn = document.getElementById('processFileBtn');
+            const fileStatus = document.getElementById('fileStatus');
+            if (hasData) {
+                if (processBtn) processBtn.innerHTML = '🔄 Replace Data (Re-import)';
+                if (fileStatus) {
+                    fileStatus.textContent = 'Using saved data. Re-import will replace the current database. Use Export/Import Backup to manage data.';
+                    fileStatus.className = 'file-status ready';
+                }
+            } else {
+                if (processBtn) processBtn.innerHTML = '📊 Process File';
+                if (fileStatus) {
+                    fileStatus.textContent = '';
+                    fileStatus.className = 'file-status';
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to update import UI state', error);
+        }
+    }
+
+    /**
      * Load user preferences
      */
     loadUserPreferences() {
@@ -861,6 +956,39 @@ function clearAllData() {
  */
 function toggleDarkMode() {
     window.app.toggleDarkMode();
+}
+
+/**
+ * Add a new personnel quickly via UI button
+ * @param {string} categoryTab - 'nsf' or 'regulars' context for default category
+ */
+function addNewPersonnel(categoryTab) {
+    if (!window.app) return;
+    const name = prompt('Enter full name (e.g., TAN YAN MING):');
+    if (!name) return;
+    const sanitized = sanitizePersonnelName(name);
+    const isRegular = categoryTab === 'regulars';
+    const newPerson = {
+        name: sanitized,
+        category: isRegular ? 'Regular' : 'NSF',
+        platoon: 'Unassigned',
+        unit: 'Unassigned',
+        rank: isRegular ? '' : '',
+        pes: '',
+        ordDate: null,
+        isORD: false,
+        medicalStatus: 'Fit',
+        y1: { ippt: '', ipptDate: null, voc: '', vocDate: null, atp: '', atpDate: null },
+        y2: { ippt: '', ipptDate: null, voc: '', vocDate: null, range: '', rangeDate: null },
+        workYear: isRegular ? { ippt: '', ipptDate: null, voc: '', vocDate: null, atp: '', atpDate: null, cs: '', csDate: null } : undefined,
+        lastUpdated: new Date()
+    };
+    window.app.personnelData.unshift(newPerson);
+    window.app.filteredData = personnelManager.applyFilters(window.app.personnelData);
+    window.app.saveData();
+    window.app.updateAll();
+    window.app.addAuditEntry(`Added new personnel: ${sanitized}`);
+    alert('✅ Added: ' + sanitized);
 }
 
 /**
@@ -1002,7 +1130,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Get current storage usage
  */
-function getStorageUsage() {
+function getStorageUsageLegacy() {
     try {
         let total = 0;
         for (let key in localStorage) {

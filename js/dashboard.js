@@ -14,11 +14,11 @@ class SofunDashboard {
         this.initialized = false;
         this.activeCharts = new Set(['y2Ippt', 'y2Voc', 'y2Range', 'platoon']); // Default active charts
         this.chartColors = {
-            primary: '#3498db',
+            primary: '#d4af37', // gold
             success: '#27ae60',
-            warning: '#f39c12',
+            warning: '#f1c40f',
             danger: '#e74c3c',
-            info: '#17a2b8',
+            info: '#b38b2a',
             secondary: '#6c757d'
         };
     }
@@ -63,6 +63,37 @@ class SofunDashboard {
         this.createComparisonChart();
         
         console.log('✅ All dashboard charts created');
+
+        // Optional fox watermark on charts
+        try {
+            const watermarkImg = new Image();
+            watermarkImg.src = 'assets/foxtrot-logo.png';
+            watermarkImg.onload = () => {
+                Object.values(this.charts).forEach(chart => {
+                    if (!chart) return;
+                    const plugin = {
+                        id: 'foxWatermark',
+                        afterDraw: (c) => {
+                            const ctx = c.ctx;
+                            ctx.save();
+                            const { width, height } = c.chartArea;
+                            const size = Math.min(width, height) * 0.4;
+                            const x = c.chartArea.left + width / 2 - size / 2;
+                            const y = c.chartArea.top + height / 2 - size / 2;
+                            ctx.globalAlpha = 0.06;
+                            ctx.drawImage(watermarkImg, x, y, size, size);
+                            ctx.restore();
+                        }
+                    };
+                    c = chart; // reference
+                    c.config.plugins = c.config.plugins || [];
+                    c.config.plugins.push(plugin);
+                    c.update();
+                });
+            };
+        } catch (e) {
+            console.warn('Watermark not applied:', e);
+        }
     }
 
     /* ---------- Chart Creation ---------- */
@@ -84,11 +115,11 @@ class SofunDashboard {
                 datasets: [{
                     data: [0, 0, 0, 0, 0],
                     backgroundColor: [
-                        '#FFD700', // Gold
-                        '#C0C0C0', // Silver
-                        '#28A745', // Pass (Green)
-                        '#DC3545', // Fail (Red)
-                        '#FFC107'  // Pending (Yellow)
+                        '#d4af37', // Gold
+                        '#c0c0c0', // Silver
+                        '#27ae60', // Pass (Green)
+                        '#e74c3c', // Fail (Red)
+                        '#f1c40f'  // Pending (Yellow)
                     ],
                     borderWidth: 2,
                     borderColor: this.isDarkMode ? '#495057' : '#ffffff'
@@ -139,19 +170,19 @@ class SofunDashboard {
                 datasets: [{
                     label: 'Pass',
                     data: [0, 0],
-                    backgroundColor: '#28A745',
+                    backgroundColor: '#27ae60',
                     borderColor: '#1e7e34',
                     borderWidth: 1
                 }, {
                     label: 'Fail',
                     data: [0, 0],
-                    backgroundColor: '#DC3545',
+                    backgroundColor: '#e74c3c',
                     borderColor: '#bd2130',
                     borderWidth: 1
                 }, {
                     label: 'Pending',
                     data: [0, 0],
-                    backgroundColor: '#FFC107',
+                    backgroundColor: '#f1c40f',
                     borderColor: '#e0a800',
                     borderWidth: 1
                 }]
@@ -201,15 +232,15 @@ class SofunDashboard {
                     label: 'Personnel Count',
                     data: [0, 0, 0, 0, 0],
                     backgroundColor: [
-                        '#007BFF', // Marksman (Blue)
-                        '#17A2B8', // Sharpshooter (Cyan)
-                        '#28A745', // Pass (Green)
-                        '#DC3545', // Fail (Red)
-                        '#FFC107'  // Pending (Yellow)
+                        '#b38b2a', // Marksman (Gold-mid)
+                        '#9b59b6', // Sharpshooter (Purple)
+                        '#27ae60', // Pass
+                        '#e74c3c', // Fail
+                        '#f1c40f'  // Pending
                     ],
                     borderColor: [
-                        '#0056b3',
-                        '#117a8b',
+                        '#8c6d1f',
+                        '#7d3c98',
                         '#1e7e34',
                         '#bd2130',
                         '#e0a800'
@@ -261,7 +292,7 @@ class SofunDashboard {
                     label: 'Y2 Completion %',
                     data: [],
                     backgroundColor: this.chartColors.primary,
-                    borderColor: '#2980b9',
+                    borderColor: '#8c6d1f',
                     borderWidth: 1
                 }]
             },
@@ -496,16 +527,16 @@ class SofunDashboard {
                 datasets: [{
                     label: 'Y1 Performance',
                     data: [0, 0, 0, 0],
-                    borderColor: '#ff6384',
-                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                    borderColor: '#b38b2a',
+                    backgroundColor: 'rgba(179, 139, 42, 0.15)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4
                 }, {
                     label: 'Y2 Performance',
                     data: [0, 0, 0, 0],
-                    borderColor: '#36a2eb',
-                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    borderColor: '#d4af37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.15)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4

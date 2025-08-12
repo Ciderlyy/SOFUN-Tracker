@@ -220,6 +220,8 @@ function sanitizePersonnelName(name) {
     if (!name) return '';
     return name
         .trim()
+        .replace(/\u00A0/g, ' ') // Convert non-breaking spaces to normal spaces
+        .replace(/\s+/g, ' ')    // Collapse multiple spaces
         .replace(/[<>\"']/g, '') // Remove potential HTML/script chars
         .substring(0, 100) // Limit length
         .toUpperCase(); // Military standard
