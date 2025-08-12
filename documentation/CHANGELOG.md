@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.1 (2025-08-12)
+- Added Foxtrot black/gold theme, logo support, and optional chart watermark
+- Integrated import-once UX with backup export/import
+- NSF windows: show `Y1 Last Window` (VOC col F) and `Y2 Last Window` (mirrors ORD)
+- Edit modal redesign with collapsible sections and grid layout
+- Date inputs accept DD-MM-YY, DD-MM-YYYY, DD/MM/YY, YYYY-MM-DD; normalize to YYYY-MM-DD
+- Fixed rank/PES edit issues and stable row numbering
+- Removed animated background
+
+## v2.0
+- Initial public release
+# Changelog
+
 All notable changes to SOFUN Tracker will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),

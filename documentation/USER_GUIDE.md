@@ -14,7 +14,7 @@
 
 ### Accessing SOFUN Tracker
 1. Open your web browser (Chrome, Firefox, Safari, or Edge recommended)
-2. Navigate to the SOFUN Tracker application
+2. In the Foxtrot site, go to `/tools/sofun` (embedded tracker)
 3. The dashboard will load automatically
 
 ### First Time Setup
@@ -51,6 +51,7 @@ Your Excel file must contain three sheets:
 - **IPPT**: Individual Physical Proficiency Test results
 - **VOC**: Vocational assessment results
 - **RANGE**: Marksmanship test results
+  - NSF window dates: Y1 Last Window from VOC column F; Y2 Last Window mirrors ORD (VOC column G)
 
 ### Import Process
 1. Click **"Upload SOFUN Tracker Excel File"**
@@ -86,9 +87,9 @@ After import, the system will:
    - Personal details (name, rank, platoon)
    - Y1 assessments (NSF only): IPPT, VOC, ATP
    - Y2 assessments: IPPT, VOC, Range
-   - Test dates for tracking
+   - Test dates for tracking (type `YYYY-MM-DD`, `DD-MM-YYYY`, `DD/MM/YY`, or `DD-MM-YY`)
    - Medical status
-   - ORD date (NSF only)
+   - ORD date (NSF only) and Y1 Last Window (NSF only). Future dates allowed.
 3. Click **"Save Changes"** to confirm
 4. Changes are automatically logged in the audit trail
 

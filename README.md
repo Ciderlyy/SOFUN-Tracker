@@ -1,12 +1,12 @@
 # SOFUN Tracker v2.0
 
-[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/your-username/sofun-tracker)
+[![Version](https://img.shields.io/badge/version-2.1-gold.svg)](#)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Web-orange.svg)]()
 
 **Enhanced NSF & Regular Personnel Assessment Tracking System**
 
-Access the website here (https://ciderlyy.github.io/SOFUN-Tracker/)
+Integrated in Foxtrot site at `/tools/sofun` (embedded from `public/sofun-tracker/`).
 
 A comprehensive web-based solution for military unit commanders to track and manage personnel assessments, designed specifically for Singapore Armed Forces (SAF) units managing both National Service (NSF) and Regular personnel.
 
@@ -21,12 +21,14 @@ SOFUN Tracker is a modern, responsive web application that streamlines the compl
 - **Y2 Phase**: IPPT, VOC, Range assessments for all personnel
 - **Status Progression**: Y1 In progress → Y2 Not started → Y2 In progress → Y2 Completed
 - **Test Date Management**: Track completion dates and overdue assessments
+ - **Window Dates**: NSF `Y1 Last Window` (VOC column F) and `Y2 Last Window` (mirrors ORD) displayed in NSF table and editable in modal
 
 ### 🎛️ **Advanced Data Management**
 - **Excel Integration**: Import/export with military-standard Excel formats
 - **Real-time Search & Filtering**: By name, platoon, status, category
 - **Bulk Operations**: Update multiple personnel records simultaneously
 - **Data Validation**: Automatic platoon name correction and validation
+ - **Import-once UX**: Data persists in localStorage; re-import asks to replace. Backup Export/Import available.
 
 ### 👥 **Personnel Management**
 - **Dual Category Support**: NSF and Regular personnel workflows
@@ -45,6 +47,7 @@ SOFUN Tracker is a modern, responsive web application that streamlines the compl
 - **Responsive Design**: Works on desktop, tablet, and mobile
 - **Intuitive Interface**: Military-standard workflows and terminology
 - **Error Prevention**: Built-in validation and confirmation dialogs
+ - **Foxtrot Theme**: Black/gold palette with optional fox watermark and header logo
 
 ## 🚀 Quick Start
 
@@ -52,7 +55,7 @@ SOFUN Tracker is a modern, responsive web application that streamlines the compl
 - Modern web browser (Chrome, Firefox, Safari, Edge)
 - No server installation required - runs entirely in browser
 
-### Installation
+### Installation (Standalone)
 
 1. **Clone the repository**
    ```bash
@@ -109,6 +112,7 @@ See [Data Format Guide](documentation/data-format.md) for detailed column specif
 - **Vanilla JavaScript**: No framework dependencies for maximum compatibility
 - **SheetJS**: Excel file processing
 - **LocalStorage**: Client-side data persistence
+ - **Foxtrot Integration**: Served as static assets under `Foxtrot-site/public/sofun-tracker/` and embedded via `/tools/sofun` route
 
 ### Module Structure
 ```
@@ -139,7 +143,7 @@ assets/
 - **Range**: Marksman, Sharpshooter, Pass, Fail
 
 ### Customization
-Edit `assets/js/utils.js` to modify:
+Edit `js/utils.js` to modify:
 - Valid platoon names
 - Assessment grade options
 - Application configuration
@@ -196,9 +200,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Print layout issues**: Use Chrome/Edge for best print results
 
 ### Getting Help
-- Check [Documentation](documentation/)
-- Review [FAQ](documentation/FAQ.md)
-- Open an [Issue](https://github.com/your-username/sofun-tracker/issues)
+- Foxtrot site: refer to the main project’s docs
+- Tracker module: see `documentation/` in this repo
 
 ## 🏆 Acknowledgments
 
