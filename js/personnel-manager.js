@@ -424,6 +424,10 @@ class PersonnelManager {
                 if (firstInput) {
                     setTimeout(() => firstInput.focus(), 100);
                 }
+                // Normalize date inputs display
+                this.normalizeDateInputs();
+                // Attach on-blur normalizers for friendly typing
+                this.attachDateNormalizers();
             }
             
         } catch (error) {
@@ -516,10 +520,64 @@ class PersonnelManager {
     setFormValue(id, value) {
         const element = document.getElementById(id);
         if (element) {
-            element.value = value;
+            // Normalize ISO-like strings into YYYY-MM-DD for date inputs
+            let v = value;
+            if (element.classList && element.classList.contains('date-input')) {
+                if (typeof value === 'string' && value.includes('T')) {
+                    v = value.split('T')[0];
+                } else {
+                    v = formatDateForInput(value);
+                }
+            }
+            element.value = v || '';
+            try { element.setAttribute('value', element.value); } catch (_) {}
         } else {
             console.warn(`Form element not found: ${id}`);
         }
+    }
+
+    /**
+     * Normalize visible date inputs to YYYY-MM-DD
+     */
+    normalizeDateInputs() {
+        try {
+            document.querySelectorAll('.date-input').forEach((el) => {
+                if (el && 'value' in el) {
+                    const raw = el.value;
+                    if (raw && raw.includes('T')) {
+                        el.value = raw.split('T')[0];
+                    } else {
+                        el.value = formatDateForInput(raw);
+                    }
+                    try { el.setAttribute('value', el.value); } catch (_) {}
+                }
+            });
+        } catch (_) { /* noop */ }
+    }
+
+    /**
+     * Add blur handlers so users can type DD-MM-YYYY or DD/MM/YY and it normalizes to YYYY-MM-DD
+     */
+    attachDateNormalizers() {
+        try {
+            document.querySelectorAll('.date-input').forEach((el) => {
+                el.removeEventListener?.('_blurNormalize', el._blurNormalize);
+                el._blurNormalize = () => {
+                    const raw = el.value?.trim();
+                    if (!raw) return;
+                    // Replace slashes with dashes for consistency
+                    const normalized = raw.replace(/\//g, '-');
+                    // Allow future for ORD/Y1 window fields
+                    const allowFuture = el.id === 'editOrdDate' || el.id === 'editY1WindowDate';
+                    const parsed = validateDateInput(normalized, allowFuture);
+                    if (parsed) {
+                        el.value = formatDateForInput(parsed);
+                        try { el.setAttribute('value', el.value); } catch (_) {}
+                    }
+                };
+                el.addEventListener('blur', el._blurNormalize);
+            });
+        } catch (_) { /* noop */ }
     }
 
     /**
@@ -669,8 +727,8 @@ class PersonnelManager {
         for (const field of dateFields) {
             const value = field.includes('.') ? 
                 data[field.split('.')[0]]?.[field.split('.')[1]] : data[field];
-            
-            if (value && !validateDateInput(value)) {
+            const allowFuture = (field === 'ordDate' || field === 'y1WindowEndDate');
+            if (value && !validateDateInput(value, allowFuture)) {
                 showErrorMessage(`Invalid date format in ${field}`);
                 return false;
             }

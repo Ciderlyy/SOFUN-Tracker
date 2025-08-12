@@ -269,12 +269,14 @@ function validateDateInput(dateString, allowFuture = false) {
     try {
         let date;
         
-        // Handle DD-MM-YY format
-        if (typeof dateString === 'string' && dateString.match(/^\d{1,2}-\d{1,2}-\d{2}$/)) {
-            const [day, month, year] = dateString.split('-');
-            // Convert 2-digit year to 4-digit year (assuming 20xx for years 00-29, 19xx for 30-99)
-            const fullYear = parseInt(year) < 30 ? 2000 + parseInt(year) : 1900 + parseInt(year);
-            date = new Date(fullYear, parseInt(month) - 1, parseInt(day));
+        // Handle DD-MM-YY / DD-MM-YYYY formats
+        if (typeof dateString === 'string' && /^\d{1,2}-\d{1,2}-\d{2,4}$/.test(dateString)) {
+            const parts = dateString.split('-');
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10) - 1;
+            const yr = parts[2];
+            const fullYear = yr.length === 2 ? (parseInt(yr, 10) < 30 ? 2000 + parseInt(yr, 10) : 1900 + parseInt(yr, 10)) : parseInt(yr, 10);
+            date = new Date(fullYear, month, day);
         } else {
             date = new Date(dateString);
         }
