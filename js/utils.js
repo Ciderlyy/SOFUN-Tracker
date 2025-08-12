@@ -56,6 +56,24 @@ function formatDate(dateStr) {
 }
 
 /**
+ * Format a stored date value for editing input (YYYY-MM-DD)
+ * Accepts Date objects or parseable strings; falls back to original value
+ */
+function formatDateForInput(value) {
+    if (!value) return '';
+    try {
+        const d = (value instanceof Date) ? value : new Date(value);
+        if (isNaN(d.getTime())) return String(value);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const da = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${da}`;
+    } catch (e) {
+        return String(value);
+    }
+}
+
+/**
  * Get current timestamp string
  * @returns {string} Current timestamp in locale string
  */

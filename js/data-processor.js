@@ -41,9 +41,10 @@ class SofunDataProcessor {
             const sheet = workbook.Sheets[allInOneSheetName];
             const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-            // --- Extract ORD dates and Y1 window dates from VOC sheet ---
+            // --- Extract ORD dates, Y1 window dates, and Y2 window dates from VOC sheet ---
             let ordDateMap = new Map();
             let y1WindowMap = new Map();
+            let y2WindowMap = new Map();
             const vocSheetName = availableSheets.find(
                 name => name.trim().toLowerCase() === 'voc'
             );
@@ -66,16 +67,20 @@ class SofunDataProcessor {
                 for (let i = vocDataStartRow; i < vocData.length; i++) {
                     const row = vocData[i];
                     const name = row[2]?.toString().trim();
-                    const y1WindowRaw = row[5]; // Column F (index 5) - Y1 Window End Date
+                    const y1WindowRaw = row[5]; // Column F (index 5) - Y1 Last Window
                     const ordRaw = row[6]; // Column G (index 6) - ORD Date
+                    const y2WindowRaw = row[6]; // For this dataset, Y2 Last Window aligns with ORD Date
                     
                     if (name) {
-                        const nameKey = name.toUpperCase();
+                        const nameKey = sanitizePersonnelName(name);
                         if (y1WindowRaw) {
                             y1WindowMap.set(nameKey, this.parseDate(y1WindowRaw));
                         }
                         if (ordRaw) {
                             ordDateMap.set(nameKey, this.parseDate(ordRaw));
+                        }
+                        if (y2WindowRaw) {
+                            y2WindowMap.set(nameKey, this.parseDate(y2WindowRaw));
                         }
                     }
                 }
@@ -208,6 +213,12 @@ class SofunDataProcessor {
                     }
                     if (y1WindowMap.has(key)) {
                         person.y1WindowEndDate = y1WindowMap.get(key);
+                    }
+                    if (y2WindowMap.has(key)) {
+                        person.y2WindowEndDate = y2WindowMap.get(key);
+                    } else if (!person.y2WindowEndDate && person.ordDate) {
+                        // Fallback: mirror ORD date if Y2 window not present
+                        person.y2WindowEndDate = person.ordDate;
                     }
                 }
                 // Assign results based on personnel category

@@ -297,6 +297,8 @@
                                 <th>Name</th>
                                 <th>Platoon</th>
                                 <th>ORD Date</th>
+                                <th>Y1 Last Window</th>
+                                <th>Y2 Last Window</th>
                                 <th>PES Status</th>
                                 <th colspan="3" class="phase-header">Y1 Assessment</th>
                                 <th colspan="3" class="phase-header">Y2 Assessment</th>
@@ -305,6 +307,7 @@
                                 <th>Actions</th>
                             </tr>
                             <tr>
+                                <th></th>
                                 <th></th>
                                 <th></th>
                                 <th></th>
@@ -462,6 +465,7 @@
             <span class="close" onclick="closeEditModal()">&times;</span>
             <h2>Edit Personnel Record</h2>
             <form id="editForm">
+                <div class="form-grid">
                 <div class="form-group">
                     <label>Name:</label>
                     <input type="text" id="editName" required>
@@ -508,7 +512,11 @@
                 </div>
                 <div class="form-group">
                     <label>ORD Date (NSF only):</label>
-                    <input type="date" id="editOrdDate">
+                    <input type="text" class="date-input" id="editOrdDate" placeholder="DD-MM-YY or YYYY-MM-DD">
+                </div>
+                <div class="form-group">
+                    <label>Y1 Last Window (NSF only):</label>
+                    <input type="text" class="date-input" id="editY1WindowDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div class="form-group">
                     <label>Medical Status:</label>
@@ -519,7 +527,9 @@
                         <option value="Medical Board">Medical Board</option>
                     </select>
                 </div>
-                <h3>Y1 Assessment</h3>
+                </div>
+                <details class="form-section" open>
+                    <summary>Y1 Assessment</summary>
                 <div class="form-group">
                     <label>IPPT:</label>
                     <select id="editY1Ippt">
@@ -529,7 +539,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY1IpptDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY1IpptDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div class="form-group">
                     <label>VOC:</label>
@@ -538,7 +548,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY1VocDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY1VocDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div class="form-group">
                     <label>ATP:</label>
@@ -548,9 +558,11 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY1AtpDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY1AtpDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
-                <h3>Y2 Assessment</h3>
+                </details>
+                <details class="form-section" open>
+                    <summary>Y2 Assessment</summary>
                 <div class="form-group">
                     <label>IPPT:</label>
                     <select id="editY2Ippt">
@@ -560,7 +572,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY2IpptDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY2IpptDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div class="form-group">
                     <label>VOC:</label>
@@ -569,7 +581,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY2VocDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY2VocDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div class="form-group">
                     <label>Range:</label>
@@ -580,10 +592,12 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editY2RangeDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editY2RangeDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
+                </details>
                 
-                <h3 id="workYearHeader" style="display: none;">Work Year Assessment</h3>
+                <details class="form-section" id="workYearHeader" style="display: none;">
+                    <summary>Work Year Assessment</summary>
                 <div id="workYearIpptGroup" class="form-group" style="display: none;">
                     <label>IPPT:</label>
                     <select id="editWorkYearIppt">
@@ -593,7 +607,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editWorkYearIpptDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editWorkYearIpptDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div id="workYearVocGroup" class="form-group" style="display: none;">
                     <label>VOC:</label>
@@ -602,7 +616,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editWorkYearVocDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editWorkYearVocDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div id="workYearAtpGroup" class="form-group" style="display: none;">
                     <label>ATP:</label>
@@ -612,7 +626,7 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editWorkYearAtpDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editWorkYearAtpDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
                 <div id="workYearCsGroup" class="form-group" style="display: none;">
                     <label>CS (Combat Shooting):</label>
@@ -623,8 +637,9 @@
                         <option value="Pass">Pass</option>
                         <option value="Fail">Fail</option>
                     </select>
-                    <input type="date" id="editWorkYearCsDate" placeholder="Test date">
+                    <input type="text" class="date-input" id="editWorkYearCsDate" placeholder="DD-MM-YY or YYYY-MM-DD">
                 </div>
+                </details>
                 
                 <div style="text-align: right; margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
                     <button type="button" class="btn btn-danger" id="deletePersonnelBtn" onclick="deletePersonnel()">Delete</button>

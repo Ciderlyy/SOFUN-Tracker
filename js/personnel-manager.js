@@ -10,6 +10,7 @@
 class PersonnelManager {
     constructor() {
         this.currentEditIndex = -1;
+        this.currentEditCategory = 'nsf';
         this.bulkSelectMode = false;
         this.selectedPersonnel = new Set();
         this.currentCategory = 'nsf';
@@ -267,6 +268,8 @@ class PersonnelManager {
                     <td>${escapeHtml(person.name)}</td>
                     <td>${escapeHtml(person.platoon || '-')}</td>
                     <td>${formatDate(person.ordDate)}</td>
+                    <td>${formatDate(person.y1WindowEndDate)}</td>
+                    <td>${formatDate(person.y2WindowEndDate || person.ordDate)}</td>
                     <td><span class="pes-badge">${escapeHtml(person.pes || '-')}</span></td>
                     <td><span class="status-badge status-${getStatusClass(person.y1?.ippt)}">${displayGrade(person.y1?.ippt, '-')}</span></td>
                     <td><span class="status-badge status-${getStatusClass(person.y1?.voc)}">${displayGrade(person.y1?.voc, '-')}</span></td>
@@ -403,6 +406,7 @@ class PersonnelManager {
             
             // Find the real index in the main personnel data
             this.currentEditIndex = window.app?.personnelData?.indexOf(person) ?? -1;
+            this.currentEditCategory = person.category;
             
             if (this.currentEditIndex === -1) {
                 showErrorMessage('Unable to locate personnel record');
@@ -439,7 +443,8 @@ class PersonnelManager {
             this.setFormValue('editRank', person.rank || '');
             this.setFormValue('editPes', person.pes || '');
             this.setFormValue('editPlatoon', person.platoon || '');
-            this.setFormValue('editOrdDate', person.ordDate || '');
+            this.setFormValue('editOrdDate', formatDateForInput(person.ordDate));
+            this.setFormValue('editY1WindowDate', formatDateForInput(person.y1WindowEndDate));
             this.setFormValue('editMedicalStatus', person.medicalStatus || 'Fit');
             
             if (person.category === 'Regular') {
@@ -590,34 +595,18 @@ class PersonnelManager {
      * @returns {Object} Form data
      */
     extractFormData() {
-        return {
+        const base = {
             name: document.getElementById('editName')?.value?.trim() || '',
             rank: document.getElementById('editRank')?.value || '',
             pes: document.getElementById('editPes')?.value || '',
             platoon: document.getElementById('editPlatoon')?.value || '',
             ordDate: document.getElementById('editOrdDate')?.value || '',
-            medicalStatus: document.getElementById('editMedicalStatus')?.value || 'Fit',
-            // Assessment data structure depends on personnel category
-            ...(document.getElementById('editY1Ippt') ? {
-                // NSF personnel - Y1/Y2 assessments
-                y1: {
-                    ippt: document.getElementById('editY1Ippt')?.value || '',
-                    ipptDate: document.getElementById('editY1IpptDate')?.value || '',
-                    voc: document.getElementById('editY1Voc')?.value || '',
-                    vocDate: document.getElementById('editY1VocDate')?.value || '',
-                    atp: document.getElementById('editY1Atp')?.value || '',
-                    atpDate: document.getElementById('editY1AtpDate')?.value || ''
-                },
-                y2: {
-                    ippt: document.getElementById('editY2Ippt')?.value || '',
-                    ipptDate: document.getElementById('editY2IpptDate')?.value || '',
-                    voc: document.getElementById('editY2Voc')?.value || '',
-                    vocDate: document.getElementById('editY2VocDate')?.value || '',
-                    range: document.getElementById('editY2Range')?.value || '',
-                    rangeDate: document.getElementById('editY2RangeDate')?.value || ''
-                }
-            } : {
-                // Regular personnel - Work Year assessments
+            y1WindowEndDate: document.getElementById('editY1WindowDate')?.value || '',
+            medicalStatus: document.getElementById('editMedicalStatus')?.value || 'Fit'
+        };
+        if (this.currentEditCategory === 'Regular') {
+            return {
+                ...base,
                 workYear: {
                     ippt: document.getElementById('editWorkYearIppt')?.value || '',
                     ipptDate: document.getElementById('editWorkYearIpptDate')?.value || '',
@@ -628,7 +617,26 @@ class PersonnelManager {
                     cs: document.getElementById('editWorkYearCs')?.value || '',
                     csDate: document.getElementById('editWorkYearCsDate')?.value || ''
                 }
-            })
+            };
+        }
+        return {
+            ...base,
+            y1: {
+                ippt: document.getElementById('editY1Ippt')?.value || '',
+                ipptDate: document.getElementById('editY1IpptDate')?.value || '',
+                voc: document.getElementById('editY1Voc')?.value || '',
+                vocDate: document.getElementById('editY1VocDate')?.value || '',
+                atp: document.getElementById('editY1Atp')?.value || '',
+                atpDate: document.getElementById('editY1AtpDate')?.value || ''
+            },
+            y2: {
+                ippt: document.getElementById('editY2Ippt')?.value || '',
+                ipptDate: document.getElementById('editY2IpptDate')?.value || '',
+                voc: document.getElementById('editY2Voc')?.value || '',
+                vocDate: document.getElementById('editY2VocDate')?.value || '',
+                range: document.getElementById('editY2Range')?.value || '',
+                rangeDate: document.getElementById('editY2RangeDate')?.value || ''
+            }
         };
     }
 
@@ -652,9 +660,9 @@ class PersonnelManager {
             return false;
         }
         
-        // Validate dates
+        // Validate dates (accept DD-MM-YY, DD/MM/YY, YYYY-MM-DD)
         const dateFields = [
-            'ordDate', 'y1.ipptDate', 'y1.vocDate', 'y1.atpDate',
+            'ordDate', 'y1WindowEndDate', 'y1.ipptDate', 'y1.vocDate', 'y1.atpDate',
             'y2.ipptDate', 'y2.vocDate', 'y2.rangeDate'
         ];
         
@@ -679,9 +687,13 @@ class PersonnelManager {
     updatePersonnelRecord(person, data) {
         person.name = sanitizePersonnelName(data.name);
         person.rank = data.rank;
+        person.pes = data.pes;
         person.platoon = data.platoon;
         person.unit = data.platoon; // Keep unit in sync
         person.ordDate = data.ordDate;
+        if (data.y1WindowEndDate !== undefined) {
+            person.y1WindowEndDate = data.y1WindowEndDate;
+        }
         person.medicalStatus = data.medicalStatus;
         
         // Update Y1 data (if exists)
@@ -733,6 +745,7 @@ class PersonnelManager {
         // Compare basic fields
         const basicFields = [
             { key: 'name', label: 'Name' },
+            { key: 'rank', label: 'Rank' },
             { key: 'pes', label: 'PES' },
             { key: 'platoon', label: 'Platoon' },
             { key: 'ordDate', label: 'ORD Date' },

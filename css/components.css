@@ -384,6 +384,28 @@ tr:hover .serial-number {
     padding-left: 10px;
 }
 
+/* Cleaner form layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 10px;
+}
+
+.form-section {
+    margin: 10px 0;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.form-section > summary {
+    font-weight: 700;
+    color: var(--text-color);
+    cursor: pointer;
+    outline: none;
+}
+
 .close {
     color: #aaa;
     float: right;
@@ -431,6 +453,11 @@ tr:hover .serial-number {
     font-size: 0.9em;
     transition: all 0.3s ease;
     background: white;
+}
+
+/* Date text inputs styling */
+.date-input {
+    letter-spacing: 0.5px;
 }
 
 .form-group input:focus,
