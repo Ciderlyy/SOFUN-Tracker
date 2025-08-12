@@ -650,13 +650,20 @@ class PersonnelManager {
      * @returns {Object} Form data
      */
     extractFormData() {
+        const norm = (v) => {
+            const s = (v || '').toString().trim();
+            if (!s) return '';
+            const iso = parseToISODateOnly(s);
+            return iso || s;
+        };
+
         const base = {
             name: document.getElementById('editName')?.value?.trim() || '',
             rank: document.getElementById('editRank')?.value || '',
             pes: document.getElementById('editPes')?.value || '',
             platoon: document.getElementById('editPlatoon')?.value || '',
-            ordDate: document.getElementById('editOrdDate')?.value || '',
-            y1WindowEndDate: document.getElementById('editY1WindowDate')?.value || '',
+            ordDate: norm(document.getElementById('editOrdDate')?.value),
+            y1WindowEndDate: norm(document.getElementById('editY1WindowDate')?.value),
             medicalStatus: document.getElementById('editMedicalStatus')?.value || 'Fit'
         };
         if (this.currentEditCategory === 'Regular') {
@@ -664,13 +671,13 @@ class PersonnelManager {
                 ...base,
                 workYear: {
                     ippt: document.getElementById('editWorkYearIppt')?.value || '',
-                    ipptDate: document.getElementById('editWorkYearIpptDate')?.value || '',
+                    ipptDate: norm(document.getElementById('editWorkYearIpptDate')?.value),
                     voc: document.getElementById('editWorkYearVoc')?.value || '',
-                    vocDate: document.getElementById('editWorkYearVocDate')?.value || '',
+                    vocDate: norm(document.getElementById('editWorkYearVocDate')?.value),
                     atp: document.getElementById('editWorkYearAtp')?.value || '',
-                    atpDate: document.getElementById('editWorkYearAtpDate')?.value || '',
+                    atpDate: norm(document.getElementById('editWorkYearAtpDate')?.value),
                     cs: document.getElementById('editWorkYearCs')?.value || '',
-                    csDate: document.getElementById('editWorkYearCsDate')?.value || ''
+                    csDate: norm(document.getElementById('editWorkYearCsDate')?.value)
                 }
             };
         }
@@ -678,19 +685,19 @@ class PersonnelManager {
             ...base,
             y1: {
                 ippt: document.getElementById('editY1Ippt')?.value || '',
-                ipptDate: document.getElementById('editY1IpptDate')?.value || '',
+                ipptDate: norm(document.getElementById('editY1IpptDate')?.value),
                 voc: document.getElementById('editY1Voc')?.value || '',
-                vocDate: document.getElementById('editY1VocDate')?.value || '',
+                vocDate: norm(document.getElementById('editY1VocDate')?.value),
                 atp: document.getElementById('editY1Atp')?.value || '',
-                atpDate: document.getElementById('editY1AtpDate')?.value || ''
+                atpDate: norm(document.getElementById('editY1AtpDate')?.value)
             },
             y2: {
                 ippt: document.getElementById('editY2Ippt')?.value || '',
-                ipptDate: document.getElementById('editY2IpptDate')?.value || '',
+                ipptDate: norm(document.getElementById('editY2IpptDate')?.value),
                 voc: document.getElementById('editY2Voc')?.value || '',
-                vocDate: document.getElementById('editY2VocDate')?.value || '',
+                vocDate: norm(document.getElementById('editY2VocDate')?.value),
                 range: document.getElementById('editY2Range')?.value || '',
-                rangeDate: document.getElementById('editY2RangeDate')?.value || ''
+                rangeDate: norm(document.getElementById('editY2RangeDate')?.value)
             }
         };
     }
@@ -753,11 +760,13 @@ class PersonnelManager {
         
         // Update Y1 data (if exists)
         if (data.y1) {
+            if (!person.y1) person.y1 = {};
             Object.assign(person.y1, data.y1);
         }
         
         // Update Y2 data (if exists)
         if (data.y2) {
+            if (!person.y2) person.y2 = {};
             Object.assign(person.y2, data.y2);
         }
         
@@ -780,6 +789,25 @@ class PersonnelManager {
      */
     comparePersonnelData(original, updated) {
         const changes = [];
+
+        // Normalize values for comparison, especially dates
+        const normalizeForCompare = (key, value) => {
+            if (value === null || value === undefined) return '';
+            const s = typeof value === 'string' ? value.trim() : value;
+            const isDateKey = /Date$/i.test(key) || key === 'ordDate' || key === 'y1WindowEndDate';
+            if (isDateKey) {
+                if (typeof s === 'string') {
+                    if (s.includes('T')) return s.split('T')[0];
+                    const iso = parseToISODateOnly(s);
+                    return iso || s;
+                }
+                if (s instanceof Date) {
+                    return formatDateForInput(s);
+                }
+            }
+            if (typeof s === 'object') return JSON.stringify(s);
+            return String(s);
+        };
         
         // Helper function to format values for display
         const formatValue = (value) => {
@@ -804,12 +832,13 @@ class PersonnelManager {
             { key: 'pes', label: 'PES' },
             { key: 'platoon', label: 'Platoon' },
             { key: 'ordDate', label: 'ORD Date' },
+            { key: 'y1WindowEndDate', label: 'Y1 Last Window' },
             { key: 'medicalStatus', label: 'Medical Status' }
         ];
         
         basicFields.forEach(field => {
-            const originalValue = original[field.key];
-            const updatedValue = updated[field.key];
+            const originalValue = normalizeForCompare(field.key, original[field.key]);
+            const updatedValue = normalizeForCompare(field.key, updated[field.key]);
             
             if (originalValue !== updatedValue) {
                 changes.push({
@@ -831,8 +860,8 @@ class PersonnelManager {
                 const assessmentFields = ['ippt', 'ipptDate', 'voc', 'vocDate', 'atp', 'atpDate', 'range', 'rangeDate', 'cs', 'csDate'];
                 
                 assessmentFields.forEach(field => {
-                    const originalValue = originalGroup[field];
-                    const updatedValue = updatedGroup[field];
+                    const originalValue = normalizeForCompare(field, originalGroup[field]);
+                    const updatedValue = normalizeForCompare(field, updatedGroup[field]);
                     
                     if (originalValue !== updatedValue && updatedValue !== undefined) {
                         const groupLabel = group === 'y1' ? 'Y1' : group === 'y2' ? 'Y2' : 'Work Year';
